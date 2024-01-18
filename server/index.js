@@ -11,8 +11,8 @@ const startServer = async () => {
         app.use(express.json());
 
 
-        app.use('/api/auth', require('./routes/auth'))
-        app.use('/api/message', require('./routes/messages'))
+        app.use('/api/auth', require('./routes/auth'));
+        // app.use('/api/message', require('./routes/messages'));
 
 
         app.get('/health', (req, res) => {
@@ -32,8 +32,9 @@ const startServer = async () => {
 }
 
 const initializeApp = async () => {
-    await startServer()
     await connectToMongo()
+    await startServer()
+
 
 }
 initializeApp()

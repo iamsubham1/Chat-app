@@ -16,3 +16,4 @@ const connectToMongo = async () => {
         process.exit();
     }
 }
+module.exports = connectToMongo;
