@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    number: {
+    phoneNumber: {
         type: Number,
         required: true,
         unique: true
@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+
+    profilePic: {
+        type: String,
+
+    },
+
 
 
 })

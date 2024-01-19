@@ -27,7 +27,7 @@ const signUpController = async (req, res) => {
                 name: req.body.name,
                 password: hashedPassword,
                 email: req.body.email,
-                number: req.body.number,
+                phoneNumber: req.body.number,
             });
             return res.status(200).json({ success: true, msg: "account created" });
         }
