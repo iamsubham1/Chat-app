@@ -1,13 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const { body } = require('express-validator');
-const { loginController } = require('../controllers/loginController');
-const { signUpController } = require('../controllers/SignUpController');
+const { loginController, signUpController } = require('../controllers/authController');
 
 require('dotenv').config({ path: '.env' });
 
 
-//signup
+//signup route
 router.post('/signup', [
     body('name', 'Enter a valid name').isLength({ min: 2 }),
     body('email', 'Enter a valid email').exists().isEmail(),
@@ -16,7 +15,7 @@ router.post('/signup', [
 
 ], signUpController);
 
-//login
+//login route
 router.post('/login', [
     body('number', 'Enter a valid number').isLength(10),
     body('password', 'Password cannot be empty').exists(),

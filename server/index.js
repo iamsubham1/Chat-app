@@ -12,7 +12,7 @@ const startServer = async () => {
 
 
         app.use('/api/auth', require('./routes/auth'));
-        // app.use('/api/message', require('./routes/messages'));
+        app.use('/api/message', require('./routes/messages'));
 
 
         app.get('/health', (req, res) => {
