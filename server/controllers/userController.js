@@ -3,9 +3,9 @@ const User = require('../models/UserSchema')
 //current user profile info
 const currentUserDetails = async (req, res) => {
     try {
-        const currentUser = req.user; //got the user.id
+        const currentUser = req.user; //got the user info
 
-        const currentUserDetails = await User.findById(currentUser.id);
+        const currentUserDetails = await User.findById(currentUser._id);
 
         currentUserDetails.password = null;
 

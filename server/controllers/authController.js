@@ -45,18 +45,19 @@ const loginController = async (req, res) => {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            console.log("Validation errors:", errors.array());
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
         const { number, password } = req.body;
-        let user = await User.findOne({ number: number });
+        let user = await User.findOne({ phoneNumber: number });
 
         if (user) {
             const passwordCompare = await bcrypt.compare(password, user.password);
 
             if (passwordCompare) {
-                const data = { user: { id: user.id } };
+                const { password, ...userDataWithoutPassword } = user.toObject();
+                const data = userDataWithoutPassword;
+
                 console.log(data)
                 const JWT = jwt.sign(data, process.env.signature);
                 return res.status(200).json({ success: true, JWT });
@@ -67,14 +68,10 @@ const loginController = async (req, res) => {
             console.log("Account not found for number");
         }
 
-        return res
-            .status(400)
-            .json({ success: false, error: "Enter correct credentials" });
+        return res.status(400).json({ success: false, error: "Enter correct credentials" });
     } catch (error) {
         console.error("Error during login:", error);
-        return res
-            .status(500)
-            .json({ success: false, error: "Internal server error" });
+        return res.status(500).json({ success: false, error: "Internal server error" });
     }
 };
 

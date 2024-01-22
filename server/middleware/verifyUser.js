@@ -5,8 +5,8 @@ const verifyUser = (req, res, next) => {
     const token = req.header('JWT')
     try {
         const decodedData = jwt.verify(token, process.env.signature);
-        req.user = decodedData;  //contains user.id
-
+        req.user = decodedData;  //contains all info except password
+        console.log(req.user._id)
         next();
 
     } catch (error) {

@@ -4,7 +4,7 @@ const { schema } = mongoose
 
 const chatSchema = new mongoose.Schema({
     chatName: {
-        type: string
+        type: String
     },
     isGroupChat: {
         type: Boolean
@@ -23,9 +23,10 @@ const chatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    timestamps: true,
 
-})
+}, {
+    timestamps: true,
+});
 
 const chat = mongoose.model('Chat', chatSchema);
 module.exports = chat;

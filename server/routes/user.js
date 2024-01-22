@@ -8,3 +8,6 @@ router.get('/find:id', verifyUser, findUserById);
 router.get('/search', verifyUser, searchUser);
 router.put('/edit/:id', verifyUser, editUser);
 router.delete('/delete/:id', verifyUser, deleteUser)
+
+
+module.exports = router
