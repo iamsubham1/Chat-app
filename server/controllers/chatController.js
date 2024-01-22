@@ -1,6 +1,8 @@
 const Chat = require("../models/chatSchema");
 const User = require("../models/UserSchema");
 
+
+//create a chat
 const createChat = async (req, res) => {
     try {
 
@@ -56,6 +58,7 @@ const createChat = async (req, res) => {
         return res.status(500).send("Internal server error");
     }
 };
+//get all chats
 
 const getAllChats = async (req, res) => {
     try {
@@ -75,10 +78,13 @@ const getAllChats = async (req, res) => {
     }
 };
 
+//create a group
 const createGroup = async (req, res) => {
     let { participants, chatName } = req.body;
     const reqUser = await req.user
-    participants.push(reqUser)
+    const participantsArray = Array.isArray(participants) ? participants : [];
+
+    participantsArray.push(reqUser)
     if (!participants || !chatName) {
         return res.status(400).send({ error: "participants and name field is requied" })
 
@@ -100,6 +106,7 @@ const createGroup = async (req, res) => {
     }
 }
 
+//rename the group name
 const renameGroup = async (req, res) => {
     try {
         const { chatId, chatName } = req.body;
@@ -107,13 +114,14 @@ const renameGroup = async (req, res) => {
             .populate("participants", "-password")
             .populate("groupAdmin", "-password")
 
-        return res.status(200).send(updatedChat)
+        return res.status(200).send({ message: `changed the group name to: ${updatedChat.chatName}` });
     } catch (error) {
         console.log(error.message)
         return res.status(400).send({ error: "internal server error" })
     }
 }
 
+//add participants to the group
 const addParticipants = async (req, res) => {
     try {
         const { chatId, userId } = req.body;
@@ -126,7 +134,27 @@ const addParticipants = async (req, res) => {
             .populate("participants", "-password")
             .populate("groupAdmin", "-password")
 
-        return res.status(200).send({ message: isUserIdvalid.name + "added to the group", group: upadatedGroup })
+        return res.status(200).send({ message: isUserIdvalid.name + " added to the group", group: upadatedGroup })
+    } catch (error) {
+        console.log(error.message)
+        return res.status(400).send({ error: error.message })
+    }
+}
+
+//remove participants from the group
+const removeParticipants = async (req, res) => {
+    try {
+        const { chatId, userId } = req.body;
+        const isChatIdvalid = await Chat.findById(chatId);
+        const isUserIdvalid = await User.findById(userId);
+        if (!isChatIdvalid || !isUserIdvalid) {
+            return res.status(400).send({ error: "chatId or userId invaild" })
+        }
+        const upadatedGroup = await Chat.findByIdAndUpdate(chatId, { $pull: { participants: userId } }, { new: true })
+            .populate("participants", "-password")
+            .populate("groupAdmin", "-password")
+
+        return res.status(200).send({ message: isUserIdvalid.name + "removed from the group", group: upadatedGroup })
     } catch (error) {
         console.log(error.message)
         return res.status(400).send({ error: error.message })
@@ -135,5 +163,4 @@ const addParticipants = async (req, res) => {
 
 
 
-
-module.exports = { createChat, getAllChats, createGroup };
+module.exports = { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants };

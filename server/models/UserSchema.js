@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { schema } = mongoose
+const { Schema } = mongoose
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -24,10 +24,7 @@ const userSchema = new mongoose.Schema({
     profilePic: {
         type: String,
 
-    },
-
-
-
+    }
 })
 
 const User = mongoose.model('User', userSchema)
