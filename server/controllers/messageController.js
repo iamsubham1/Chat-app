@@ -31,20 +31,29 @@ const createMessage = async (req, res) => {
 
 const getAllMessages = async (req, res) => {
     try {
-        const chatId = req.params.chatId
-        let chatExits = await Chat.findById(chatId)
-        if (!chatExits) {
-            return res.status(400).send({ error: "chat doesnt exist", chatId })
+        const chatId = req.params.id;
 
+
+        let chatExists = await Chat.findById(chatId);
+
+        if (!chatExists) {
+            // console.log("Chat not found with ID:", chatId);
+            return res.status(404).send({ error: "Chat doesn't exist", chatId });
         }
-        const messages = await Message.find(chatId)
-            .populate("sender", "-password").populate("chat");
-        return res.status(200).send(messages)
-    } catch (error) {
-        return res.status(400).send(error.message)
 
+        const messages = await Message.find({ chat: chatId })
+            .populate("sender", "-password")
+            .populate("chat");
+
+        console.log("Messages found:", messages);
+
+        return res.status(200).send(messages);
+    } catch (error) {
+        console.error("Error:", error);
+        return res.status(500).send({ error: error.message });
     }
-}
+};
+
 
 
 module.exports = { createMessage, getAllMessages };

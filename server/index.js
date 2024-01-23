@@ -2,7 +2,14 @@ const express = require('express')
 const app = express()
 const port = 8080
 const connectToMongo = require('./db')
+const cors = require('cors')
 
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
+    credentials: true
+}
+app.use(cors(corsOptions))
 
 
 const startServer = async () => {

@@ -33,24 +33,33 @@ const findUserById = async (req, res) => {
 }
 
 //take keyword and search for the user
+
 const searchUser = async (req, res) => {
     try {
-        //pagination
-        const page = req.query.page || 1
-        const limits = req.query.size || 10
-        const skip = (page - 1) * limits
-        const keyword = req.query.search ? {
-            $or: [
-                { name: { regex: req.query.regex, $options: "i" } },
-                { phoneNumber: req.query.search }
-            ]
-        } : {};
-        const searchedUser = await User.find(keyword).select("name profilePic").skip(skip).limit(limits)
-        return res.status(200).send(searchedUser)
+        const page = req.query.page || 1;
+        const limits = req.query.size || 10;
+        const skip = (page - 1) * limits;
+
+        const isNumeric = !isNaN(parseFloat(req.query.search)) && isFinite(req.query.search);
+
+        const keyword = isNumeric
+            ? { phoneNumber: req.query.search }
+            : req.query.regex
+                ? { name: { $regex: new RegExp(req.query.regex, 'i') } }
+                : { name: req.query.search };
+
+        const searchedUser = await User.find(keyword).select("name profilePic").skip(skip).limit(limits);
+
+        console.log('Keyword:', keyword);
+        console.log('Searched Users:', searchedUser);
+
+        res.status(200).send(searchedUser);
     } catch (error) {
-        res.status(400).send(error.message)
+        console.error('Error:', error.message);
+        res.status(400).send(error.message);
     }
-}
+};
+
 
 //edit user info
 const editUser = async (req, res) => {
