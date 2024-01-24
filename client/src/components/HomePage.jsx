@@ -11,9 +11,10 @@ const HomePage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [allChats, setAllChats] = useState([]);
 
+
     const fetchAllChats = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2EzMTE1Zjc5MWMxMzhlMTY4OGUiLCJuYW1lIjoiYmVuIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjEyMzQ1Njc4OTAsIl9fdiI6MCwiaWF0IjoxNzA2MDI0NTgwfQ.oByGR_EV0_VlR8BqtA7NAhSS5A83NaBXmQ-VGbgn4bY';
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2E0NjE1Zjc5MWMxMzhlMTY4OTEiLCJuYW1lIjoic3ViaGFtIiwiZW1haWwiOiJzdWJoYW1AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjkwNzgxMzMwOTcsIl9fdiI6MCwiaWF0IjoxNzA2MDgyMjg2fQ.ezQ_ngkXqDRpkbKWk1d82A_ARDFG3eWl93-h_0FTF2E';
             const response = await fetch('http://localhost:8080/api/chat/allChats', {
                 headers: {
                     JWT: token,
@@ -34,7 +35,7 @@ const HomePage = () => {
 
     const fetchSearchResults = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2EzMTE1Zjc5MWMxMzhlMTY4OGUiLCJuYW1lIjoiYmVuIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjEyMzQ1Njc4OTAsIl9fdiI6MCwiaWF0IjoxNzA2MDI0NTgwfQ.oByGR_EV0_VlR8BqtA7NAhSS5A83NaBXmQ-VGbgn4bY';
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2E0NjE1Zjc5MWMxMzhlMTY4OTEiLCJuYW1lIjoic3ViaGFtIiwiZW1haWwiOiJzdWJoYW1AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjkwNzgxMzMwOTcsIl9fdiI6MCwiaWF0IjoxNzA2MDgyMjg2fQ.ezQ_ngkXqDRpkbKWk1d82A_ARDFG3eWl93-h_0FTF2E';
             const response = await fetch(`http://localhost:8080/api/user/search?search=${keyword}`, {
                 headers: {
                     JWT: token,

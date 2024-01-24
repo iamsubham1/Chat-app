@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Chat = require("../models/chatSchema");
 const User = require("../models/UserSchema");
 
@@ -82,9 +83,12 @@ const getAllChats = async (req, res) => {
 const createGroup = async (req, res) => {
     let { participants, chatName } = req.body;
     const reqUser = await req.user
-    const participantsArray = Array.isArray(participants) ? participants : [];
 
-    participantsArray.push(reqUser) // add admin to participantsArray
+    console.log("in create group reqUser = ", reqUser.user._id)
+    const participantObj_id = participants.map(id => new mongoose.Types.ObjectId())
+    console.log("in create group reqbody{participants} = ", participantObj_id)
+
+    participants.push(reqUser.user._id)
     if (!participants || !chatName) {
         return res.status(400).send({ error: "participants and name field is requied" })
 
@@ -93,13 +97,7 @@ const createGroup = async (req, res) => {
         return res.status(400).send({ error: "add participants" })
     }
     try {
-
-        const createGroup = await Chat.create({
-            chatName,
-            participants: [...participantsArray, participants],
-            groupAdmin: reqUser._id,
-            isGroupChat: true
-        })
+        const createGroup = await Chat.create({ chatName, participants, groupAdmin: reqUser.user })
 
         const fullChat = await Chat.findById(createGroup._id)
             .populate("participants", "-password")

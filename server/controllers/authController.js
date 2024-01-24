@@ -55,8 +55,7 @@ const loginController = async (req, res) => {
             const passwordCompare = await bcrypt.compare(password, user.password);
 
             if (passwordCompare) {
-                const { password, ...userDataWithoutPassword } = user.toObject();
-                const data = userDataWithoutPassword;
+                const data = { user }
 
                 console.log(data)
                 const JWT = jwt.sign(data, process.env.signature);
