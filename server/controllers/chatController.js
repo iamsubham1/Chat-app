@@ -84,7 +84,7 @@ const createGroup = async (req, res) => {
     const reqUser = await req.user
     const participantsArray = Array.isArray(participants) ? participants : [];
 
-    participantsArray.push(reqUser)
+    participantsArray.push(reqUser) // add admin to participantsArray
     if (!participants || !chatName) {
         return res.status(400).send({ error: "participants and name field is requied" })
 
@@ -93,7 +93,13 @@ const createGroup = async (req, res) => {
         return res.status(400).send({ error: "add participants" })
     }
     try {
-        const createGroup = await Chat.create({ chatName, participants, groupAdmin: reqUser._id })
+
+        const createGroup = await Chat.create({
+            chatName,
+            participants: [...participantsArray, participants],
+            groupAdmin: reqUser._id,
+            isGroupChat: true
+        })
 
         const fullChat = await Chat.findById(createGroup._id)
             .populate("participants", "-password")

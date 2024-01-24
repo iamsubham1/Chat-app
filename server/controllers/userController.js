@@ -50,8 +50,7 @@ const searchUser = async (req, res) => {
 
         const searchedUser = await User.find(keyword).select("name profilePic").skip(skip).limit(limits);
 
-        console.log('Keyword:', keyword);
-        console.log('Searched Users:', searchedUser);
+
 
         res.status(200).send(searchedUser);
     } catch (error) {

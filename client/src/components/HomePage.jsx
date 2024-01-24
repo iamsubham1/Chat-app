@@ -11,9 +11,9 @@ const HomePage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [allChats, setAllChats] = useState([]);
 
-    const getAllChats = async () => {
+    const fetchAllChats = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2EzMTE1Zjc5MWMxMzhlMTY4OGUiLCJuYW1lIjoiYmVuIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjEyMzQ1Njc4OTAsIl9fdiI6MCwiaWF0IjoxNzA2MDI0NTgwfQ.oByGR_EV0_VlR8BqtA7NAhSS5A83NaBXmQ-VGbgn4bY'; // Replace with your JWT token
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2EzMTE1Zjc5MWMxMzhlMTY4OGUiLCJuYW1lIjoiYmVuIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjEyMzQ1Njc4OTAsIl9fdiI6MCwiaWF0IjoxNzA2MDI0NTgwfQ.oByGR_EV0_VlR8BqtA7NAhSS5A83NaBXmQ-VGbgn4bY';
             const response = await fetch('http://localhost:8080/api/chat/allChats', {
                 headers: {
                     JWT: token,
@@ -26,15 +26,15 @@ const HomePage = () => {
 
             const data = await response.json();
             setAllChats(data);
-            console.log(data)
+            console.log("Chat data:", data);
         } catch (error) {
             console.error('Error fetching all chats:', error.message);
         }
     };
 
-    const handleSearch = async () => {
+    const fetchSearchResults = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2EzMTE1Zjc5MWMxMzhlMTY4OGUiLCJuYW1lIjoiYmVuIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjEyMzQ1Njc4OTAsIl9fdiI6MCwiaWF0IjoxNzA2MDI0NTgwfQ.oByGR_EV0_VlR8BqtA7NAhSS5A83NaBXmQ-VGbgn4bY'; // Replace with your JWT token
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2EzMTE1Zjc5MWMxMzhlMTY4OGUiLCJuYW1lIjoiYmVuIiwiZW1haWwiOiJiZW5AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjEyMzQ1Njc4OTAsIl9fdiI6MCwiaWF0IjoxNzA2MDI0NTgwfQ.oByGR_EV0_VlR8BqtA7NAhSS5A83NaBXmQ-VGbgn4bY';
             const response = await fetch(`http://localhost:8080/api/user/search?search=${keyword}`, {
                 headers: {
                     JWT: token,
@@ -47,17 +47,20 @@ const HomePage = () => {
 
             const data = await response.json();
             setSearchResults(data);
+            console.log("Search results:", data);
+            console.log("Search results:", data);
+
+
+
         } catch (error) {
             console.error('Error fetching search results:', error.message);
         }
     };
 
     useEffect(() => {
-        getAllChats();
-        handleSearch()
-    }, [keyword]); // Fetch all chats when the component mounts
-
-
+        fetchAllChats();
+        fetchSearchResults();
+    }, [keyword]);
 
     return (
         <div className="w-screen h-screen relative flex justify-center" style={{ backgroundColor: '#030712' }}>
@@ -79,31 +82,21 @@ const HomePage = () => {
                         <input
                             className="border-none outline-none bg-slate-200 rounded-md w-[82%] py-1 px-2 text-black"
                             type="input"
-                            placeholder="search or start new chat"
+                            placeholder="Search or start new chat"
                             onChange={(e) => setKeyword(e.target.value)}
                             value={keyword}
                         />
-                        <button className="text-white" onClick={handleSearch}>
+                        <button className="text-white" onClick={fetchSearchResults}>
                             <FaFilter />
                         </button>
                     </div>
-                    {/* Display all chats by default or search results */}
                     <div className="chat-section w-full">
-                        {searchResults.length === 0 ? (
-                            allChats.map((item) => (
-                                <div key={item._id}>
-                                    <hr />
-                                    <ChatCard user={item} />
-                                </div>
-                            ))
-                        ) : (
-                            searchResults.map((item) => (
-                                <div key={item._id}>
-                                    <hr />
-                                    <ChatCard user={item} />
-                                </div>
-                            ))
-                        )}
+                        {(searchResults.length === 0 ? allChats : searchResults).map((chat, index) => (
+                            <div key={chat._id}>
+                                <hr />
+                                <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} />
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className="right w-[70%]" style={{ backgroundColor: '#111112' }}></div>
