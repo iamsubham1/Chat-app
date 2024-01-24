@@ -57,7 +57,7 @@ const loginController = async (req, res) => {
             if (passwordCompare) {
                 const data = { user }
 
-                console.log(data)
+                // console.log(data)
                 const JWT = jwt.sign(data, process.env.signature);
                 return res.status(200).json({ success: true, JWT });
             }

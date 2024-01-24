@@ -82,33 +82,43 @@ const getAllChats = async (req, res) => {
 //create a group
 const createGroup = async (req, res) => {
     let { participants, chatName } = req.body;
-    const reqUser = await req.user
+    const reqUser = await req.user;
 
-    console.log("in create group reqUser = ", reqUser.user._id)
-    const participantObj_id = participants.map(id => new mongoose.Types.ObjectId())
-    console.log("in create group reqbody{participants} = ", participantObj_id)
+    console.log("Before converting to ObjectId, participants =", participants);
 
-    participants.push(reqUser.user._id)
+    // Convert participants to an array of ObjectId
+    participants = participants.map(id => new mongoose.Types.ObjectId());
+
+    console.log("After converting to ObjectId, participants =", participants);
+
+    participants.push(reqUser.user._id);
+    participants.push(...participants);
+
+    // Remove duplicate participants(optional)
+    participants = Array.from(new Set(participants));
+
+    console.log("Final participants after processing =", participants);
+
     if (!participants || !chatName) {
-        return res.status(400).send({ error: "participants and name field is requied" })
-
+        return res.status(400).send({ error: "participants and name field are required" });
     }
+
     if (participants.length < 2) {
-        return res.status(400).send({ error: "add participants" })
+        return res.status(400).send({ error: "add participants" });
     }
+
     try {
-        const createGroup = await Chat.create({ chatName, participants, groupAdmin: reqUser.user })
+        const createGroup = await Chat.create({ chatName, participants, groupAdmin: reqUser.user._id, isGroupChat: true });
 
-        const fullChat = await Chat.findById(createGroup._id)
-            .populate("participants", "-password")
-            .populate("groupAdmin", "-password")
+        const fullChat = await Chat.findById(createGroup._id);
 
-        return res.status(200).send(fullChat)
+        return res.status(200).send(fullChat);
     } catch (error) {
-        console.log(error.message)
-        return res.status(400).send({ error: "internal server error" })
+        console.log(error.message);
+        return res.status(400).send({ error: "internal server error" });
     }
-}
+};
+
 
 //rename the group name
 const renameGroup = async (req, res) => {
