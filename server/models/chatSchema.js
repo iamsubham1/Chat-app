@@ -7,7 +7,8 @@ const chatSchema = new mongoose.Schema({
         type: String
     },
     isGroupChat: {
-        type: Boolean
+        type: Boolean,
+        required: true
     },
     participants: [
         {
@@ -22,6 +23,9 @@ const chatSchema = new mongoose.Schema({
     groupAdmin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+    groupPic: {
+        type: String
     },
 
 }, {

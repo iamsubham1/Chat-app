@@ -27,7 +27,7 @@ const HomePage = () => {
 
             const data = await response.json();
             setAllChats(data);
-            console.log("Chat data:", data);
+            // console.log("Chat data:", data);
         } catch (error) {
             console.error('Error fetching all chats:', error.message);
         }
@@ -48,8 +48,8 @@ const HomePage = () => {
 
             const data = await response.json();
             setSearchResults(data);
-            console.log("Search results:", data);
-            console.log("Search results:", data);
+            // console.log("Search results:", data);
+            // console.log("Search results:", data);
 
 
 

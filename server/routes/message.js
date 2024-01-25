@@ -4,10 +4,10 @@ const { getAllMessages, createMessage } = require('../controllers/messageControl
 const verifyUser = require('../middleware/verifyUser')
 
 
-//route to get all messages
+//route to get all messages 
 router.get('/getMessages/:id', verifyUser, getAllMessages);
 
-//route to create a message
+//route to create a message (takes chatid in params)
 router.post('/createMessage/:id', verifyUser, createMessage);
 
 

@@ -3,7 +3,7 @@ const Chat = require("../models/chatSchema");
 const User = require("../models/UserSchema");
 
 
-//create a chat(tested and works)
+//create a chat (tested and works)
 const createChat = async (req, res) => {
     try {
 
@@ -81,16 +81,14 @@ const getAllChats = async (req, res) => {
     }
 };
 
-
-//create a group
+//create a group (tested fixed and works)
 const createGroup = async (req, res) => {
-    let { participants, chatName } = req.body;
+    let { participants, chatName, groupPic } = req.body;
     const reqUser = await req.user;
 
     console.log("Before converting to ObjectId, participants =", participants);
 
     // Convert participants to an array of ObjectId
-    participants = participants.map(id => new mongoose.Types.ObjectId());
 
     console.log("After converting to ObjectId, participants =", participants);
 
@@ -111,7 +109,7 @@ const createGroup = async (req, res) => {
     }
 
     try {
-        const createGroup = await Chat.create({ chatName, participants, groupAdmin: reqUser.user._id, isGroupChat: true });
+        const createGroup = await Chat.create({ chatName, participants, groupAdmin: reqUser.user._id, isGroupChat: true, groupPic });
 
         const fullChat = await Chat.findById(createGroup._id);
 
@@ -122,8 +120,7 @@ const createGroup = async (req, res) => {
     }
 };
 
-
-//rename the group name
+//rename the group name (tested and works)
 const renameGroup = async (req, res) => {
     try {
         const { chatId, chatName } = req.body;
@@ -158,7 +155,7 @@ const addParticipants = async (req, res) => {
     }
 }
 
-//remove participants from the group
+//remove participants from the group (tested and works)
 const removeParticipants = async (req, res) => {
     try {
         const { chatId, userId } = req.body;

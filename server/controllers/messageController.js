@@ -1,5 +1,4 @@
 const Chat = require("../models/chatSchema");
-const User = require("../models/UserSchema");
 const Message = require("../models/MessageSchema");
 
 //tested and works
@@ -40,7 +39,6 @@ const createMessage = async (req, res) => {
 };
 
 
-//tested and works
 const getAllMessages = async (req, res) => {
     try {
         const chatId = req.params.id;

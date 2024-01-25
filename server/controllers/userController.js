@@ -5,10 +5,10 @@ const currentUserDetails = async (req, res) => {
     try {
         const currentUser = req.user; //got the user info
 
-        const currentUserDetails = await User.findById(currentUser._id);
+        const currentUserDetails = await User.findById(currentUser.user._id);
 
         currentUserDetails.password = null;
-
+        console.log(currentUserDetails)
         return res.status(200).send(currentUserDetails);
 
     } catch (error) {

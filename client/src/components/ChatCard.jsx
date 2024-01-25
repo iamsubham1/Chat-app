@@ -1,25 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { formatTimestamp } from '../utility/dateAndTime';
 
 const ChatCard = ({ chat, searchUser }) => {
-    const { chatName, participants, latestMessage, profilePic } = chat;
+    const { chatName, participants, latestMessage, groupPic } = chat;
 
     const loggedInUserId = '65ae7a4615f791c138e16891';
-    const isGroupChat = chat.isGroupChat || false;
-    const receiver = isGroupChat ? null : participants && participants.find(participant => participant._id !== loggedInUserId);
+    const isGroupChat = chat.isGroupChat;
 
+    // Check who's info to show in card (group or receiver)
+    const receiver = isGroupChat ? false : participants && participants.find(participant => participant._id !== loggedInUserId);
     const receiverName = isGroupChat ? chatName : (receiver ? receiver.name : 'Unknown');
+    const receiverAvatar = isGroupChat ? groupPic : (receiver ? receiver.profilePic : "");
 
     // Use the searchUser name if it exists
     const displayName = searchUser?.name || receiverName;
+    const displayPic = searchUser?.profilePic || receiverAvatar;
 
-    console.log("searcheduser:", searchUser);
+    // Determine the message content to display
+    let displayMessage;
+
+    if (searchUser && !latestMessage) {
+        displayMessage = "";
+    } else {
+        displayMessage = latestMessage ? latestMessage.content : 'No messages yet';
+    }
 
     return (
         <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-slate-400 mx-auto'>
             <div className='w-[13%]'>
-                {profilePic ? (
-                    <img className='h-12 w-12 rounded-full' src={profilePic} alt={displayName} />
+                {displayPic ? (
+                    <img className='h-12 w-12 rounded-full' src={displayPic} alt={displayName} />
                 ) : (
                     <img className='h-12 w-12 rounded-full' src={'default-pic-url'} alt={displayName} />
                 )}
@@ -29,10 +40,12 @@ const ChatCard = ({ chat, searchUser }) => {
                     <p className='text-md font-semibold'>
                         {displayName}
                     </p>
-                    <p className='text-sm font-semibold'>{latestMessage ? latestMessage.time : ''}</p>
+                    <p className='text-sm font-semibold'>
+                        {latestMessage ? formatTimestamp(latestMessage.createdAt) : ''}
+                    </p>
                 </div>
                 <div className='message'>
-                    <p>{latestMessage ? latestMessage.content : 'No messages yet'}</p>
+                    <p>{displayMessage}</p>
                 </div>
             </div>
         </div>
@@ -44,10 +57,10 @@ ChatCard.propTypes = {
         chatName: PropTypes.string,
         participants: PropTypes.arrayOf(PropTypes.object),
         latestMessage: PropTypes.shape({
-            time: PropTypes.string,
+            createdAt: PropTypes.string,
             content: PropTypes.string,
         }),
-        profilePic: PropTypes.string,
+        groupPic: PropTypes.string,
         isGroupChat: PropTypes.bool,
     }).isRequired,
     searchUser: PropTypes.object,

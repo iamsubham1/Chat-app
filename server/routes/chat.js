@@ -4,7 +4,7 @@ const { createChat, getAllChats, createGroup, renameGroup, addParticipants, remo
 
 const verifyUser = require('../middleware/verifyUser')
 
-//start a chat
+//start a chat 
 router.post('/create', verifyUser, createChat);
 
 //get all chats
