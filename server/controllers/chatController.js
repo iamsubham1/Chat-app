@@ -3,13 +3,13 @@ const Chat = require("../models/chatSchema");
 const User = require("../models/UserSchema");
 
 
-//create a chat
+//create a chat(tested and works)
 const createChat = async (req, res) => {
     try {
 
         const { userId } = req.body;
         const reqUser = await req.user;
-        console.log("Request User ID:", reqUser._id);
+        console.log("Request User ID:", reqUser.user._id);
 
         if (!userId) {
 
@@ -19,7 +19,7 @@ const createChat = async (req, res) => {
         let isChat = await Chat.find({
             isGroupChat: false,
             $and: [
-                { participants: { $elemMatch: { $eq: reqUser._id } } },
+                { participants: { $elemMatch: { $eq: reqUser.user._id } } },
                 { participants: { $elemMatch: { $eq: userId } } },
             ],
         })
@@ -41,7 +41,7 @@ const createChat = async (req, res) => {
             var chatData = {
                 chatName: "sender",
                 isGroupChat: false,
-                participants: [req.user._id, userId],
+                participants: [reqUser.user._id, userId],
             };
         }
 
@@ -59,25 +59,28 @@ const createChat = async (req, res) => {
         return res.status(500).send("Internal server error");
     }
 };
-//get all chats
 
+//get all chats(tested and works)
 const getAllChats = async (req, res) => {
     try {
         const reqUser = await req.user;
 
-        const chats = await Chat.find({ participants: reqUser._id })
+        const chats = await Chat.find({ participants: reqUser.user._id })
             .populate("participants", "-password")
             .populate("groupAdmin", "-password")
-            .populate("latestMessage")
-            .sort({ timestamps: -1 });
-
+            .populate({
+                path: "latestMessage",
+                populate: { path: "sender", select: "-password" } // Populate sender field in latestMessage
+            })
+            .sort({ "latestMessage.createdAt": -1 }); // Sort based on the createdAt timestamp of the latestMessage
 
         return res.status(200).send(chats);
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
         return res.status(500).send("Internal server error");
     }
 };
+
 
 //create a group
 const createGroup = async (req, res) => {
@@ -135,7 +138,7 @@ const renameGroup = async (req, res) => {
     }
 }
 
-//add participants to the group
+//add participants to the group (tested and works)
 const addParticipants = async (req, res) => {
     try {
         const { chatId, userId } = req.body;

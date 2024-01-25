@@ -14,7 +14,7 @@ const HomePage = () => {
 
     const fetchAllChats = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2E0NjE1Zjc5MWMxMzhlMTY4OTEiLCJuYW1lIjoic3ViaGFtIiwiZW1haWwiOiJzdWJoYW1AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjkwNzgxMzMwOTcsIl9fdiI6MCwiaWF0IjoxNzA2MDgyMjg2fQ.ezQ_ngkXqDRpkbKWk1d82A_ARDFG3eWl93-h_0FTF2E';
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1YWU3YTQ2MTVmNzkxYzEzOGUxNjg5MSIsIm5hbWUiOiJzdWJoYW0iLCJlbWFpbCI6InN1YmhhbUBnbWFpbC5jb20iLCJwaG9uZU51bWJlciI6OTA3ODEzMzA5NywicGFzc3dvcmQiOiIkMmEkMTAkbUthNnR4QWYydkVKZ1FPYUg1aWYuLjVHR09kVXdNT1pKSUhWSjlWOXZTUlVPRVhxc1lHa08iLCJfX3YiOjB9LCJpYXQiOjE3MDYxODAzNzR9.-1bT73baepdL_BvURB7LYM6H2nTcKDzJzM9qrpr3j9k';
             const response = await fetch('http://localhost:8080/api/chat/allChats', {
                 headers: {
                     JWT: token,
@@ -35,7 +35,7 @@ const HomePage = () => {
 
     const fetchSearchResults = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFlN2E0NjE1Zjc5MWMxMzhlMTY4OTEiLCJuYW1lIjoic3ViaGFtIiwiZW1haWwiOiJzdWJoYW1AZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOjkwNzgxMzMwOTcsIl9fdiI6MCwiaWF0IjoxNzA2MDgyMjg2fQ.ezQ_ngkXqDRpkbKWk1d82A_ARDFG3eWl93-h_0FTF2E';
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1YWU3YTQ2MTVmNzkxYzEzOGUxNjg5MSIsIm5hbWUiOiJzdWJoYW0iLCJlbWFpbCI6InN1YmhhbUBnbWFpbC5jb20iLCJwaG9uZU51bWJlciI6OTA3ODEzMzA5NywicGFzc3dvcmQiOiIkMmEkMTAkbUthNnR4QWYydkVKZ1FPYUg1aWYuLjVHR09kVXdNT1pKSUhWSjlWOXZTUlVPRVhxc1lHa08iLCJfX3YiOjB9LCJpYXQiOjE3MDYxODAzNzR9.-1bT73baepdL_BvURB7LYM6H2nTcKDzJzM9qrpr3j9k';
             const response = await fetch(`http://localhost:8080/api/user/search?search=${keyword}`, {
                 headers: {
                     JWT: token,

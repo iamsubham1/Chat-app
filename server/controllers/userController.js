@@ -16,7 +16,7 @@ const currentUserDetails = async (req, res) => {
     }
 }
 
-// get info about a user by id
+// get info about a user by id (tested and works)
 const findUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -32,8 +32,7 @@ const findUserById = async (req, res) => {
     }
 }
 
-//take keyword and search for the user
-
+//take keyword and search for the user (tested and works)
 const searchUser = async (req, res) => {
     try {
         const page = req.query.page || 1;
@@ -58,7 +57,6 @@ const searchUser = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
-
 
 //edit user info
 const editUser = async (req, res) => {

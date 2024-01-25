@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserSchema");
 
-//signup
+//signup (tested and works)
 const signUpController = async (req, res) => {
     try {
         //validation check
@@ -39,7 +39,7 @@ const signUpController = async (req, res) => {
     }
 };
 
-//login
+//login (tested and works)
 const loginController = async (req, res) => {
     try {
         const errors = validationResult(req);
