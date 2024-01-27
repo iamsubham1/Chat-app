@@ -48,8 +48,9 @@ const loginController = async (req, res) => {
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
-        const { number, password } = req.body;
-        let user = await User.findOne({ phoneNumber: number });
+        const { number, password, email } = req.body;
+        console.log(req.body)
+        let user = await User.findOne({ $or: [{ email: email }, { phoneNumber: number }] });
 
         if (user) {
             const passwordCompare = await bcrypt.compare(password, user.password);

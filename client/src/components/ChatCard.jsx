@@ -2,10 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { formatTimestamp } from '../utility/dateAndTime';
 
-const ChatCard = ({ chat, searchUser }) => {
+const ChatCard = ({ chat, searchUser, user }) => {
     const { chatName, participants, latestMessage, groupPic } = chat;
 
-    const loggedInUserId = '65ae7a4615f791c138e16891';
+
+    const loggedInUserId = user._id
+    // console.log(userInformation)
+
     const isGroupChat = chat.isGroupChat;
 
     // Check who's info to show in card (group or receiver)
@@ -37,10 +40,10 @@ const ChatCard = ({ chat, searchUser }) => {
             </div>
             <div className='w-[80%]'>
                 <div className='flex justify-between items-center'>
-                    <p className='text-md font-semibold'>
+                    <p className='text-md font-semibold capitalize'>
                         {displayName}
                     </p>
-                    <p className='text-sm font-semibold'>
+                    <p className='text-sm font-semibold '>
                         {latestMessage ? formatTimestamp(latestMessage.createdAt) : ''}
                     </p>
                 </div>

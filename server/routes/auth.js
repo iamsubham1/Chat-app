@@ -17,7 +17,6 @@ router.post('/signup', [
 
 //login route
 router.post('/login', [
-    body('number', 'Enter a valid number').isLength(10),
     body('password', 'Password cannot be empty').exists(),
 ], loginController);
 

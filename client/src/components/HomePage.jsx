@@ -5,16 +5,23 @@ import { IoMdMore } from 'react-icons/io';
 import { FaFilter } from 'react-icons/fa6';
 import ChatCard from './ChatCard';
 import user from '../assets/user.png';
+import { useNavigate } from 'react-router-dom';
+import { getCookie } from '@/utility/getcookie';
+
 
 const HomePage = () => {
+    const token = getCookie('JWT');
+    const navigate = useNavigate();
+
     const [keyword, setKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [allChats, setAllChats] = useState([]);
+    const [userInfo, setUserInfo] = useState(''); // Initialize with a default value or null
 
 
     const fetchAllChats = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1YWU3YTQ2MTVmNzkxYzEzOGUxNjg5MSIsIm5hbWUiOiJzdWJoYW0iLCJlbWFpbCI6InN1YmhhbUBnbWFpbC5jb20iLCJwaG9uZU51bWJlciI6OTA3ODEzMzA5NywicGFzc3dvcmQiOiIkMmEkMTAkbUthNnR4QWYydkVKZ1FPYUg1aWYuLjVHR09kVXdNT1pKSUhWSjlWOXZTUlVPRVhxc1lHa08iLCJfX3YiOjB9LCJpYXQiOjE3MDYxODAzNzR9.-1bT73baepdL_BvURB7LYM6H2nTcKDzJzM9qrpr3j9k';
+
             const response = await fetch('http://localhost:8080/api/chat/allChats', {
                 headers: {
                     JWT: token,
@@ -35,7 +42,7 @@ const HomePage = () => {
 
     const fetchSearchResults = async () => {
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY1YWU3YTQ2MTVmNzkxYzEzOGUxNjg5MSIsIm5hbWUiOiJzdWJoYW0iLCJlbWFpbCI6InN1YmhhbUBnbWFpbC5jb20iLCJwaG9uZU51bWJlciI6OTA3ODEzMzA5NywicGFzc3dvcmQiOiIkMmEkMTAkbUthNnR4QWYydkVKZ1FPYUg1aWYuLjVHR09kVXdNT1pKSUhWSjlWOXZTUlVPRVhxc1lHa08iLCJfX3YiOjB9LCJpYXQiOjE3MDYxODAzNzR9.-1bT73baepdL_BvURB7LYM6H2nTcKDzJzM9qrpr3j9k';
+
             const response = await fetch(`http://localhost:8080/api/user/search?search=${keyword}`, {
                 headers: {
                     JWT: token,
@@ -58,10 +65,35 @@ const HomePage = () => {
         }
     };
 
+    const fetchUserinfo = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/user/profile', {
+                headers: {
+                    JWT: token,
+                },
+            })
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const userData = await response.json()
+            setUserInfo(userData);
+
+
+        } catch (error) {
+            console.error('Error fetching user info results:', error.message);
+
+        }
+    }
     useEffect(() => {
+        if (!token) {
+            // If token is not present, navigate to login
+            navigate('/login');
+        }
         fetchAllChats();
         fetchSearchResults();
-    }, [keyword]);
+        fetchUserinfo();
+    }, [navigate, keyword]);
 
     return (
         <div className="w-screen h-screen relative flex justify-center" style={{ backgroundColor: '#030712' }}>
@@ -70,8 +102,8 @@ const HomePage = () => {
                 <div className="left w-[30%]" style={{ backgroundColor: '#27272A' }}>
                     <div className="top-section w-full h-[9%] bg-slate-400 flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
-                            <img className="rounded w-10 h-10 cursor-pointer" src={user} alt="User" />
-                            <p>Username</p>
+                            <img className="rounded w-10 h-10 cursor-pointer" src={userInfo.profilePic} alt="User" />
+                            <p className='capitalize'>{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
                             <TbCircleDashed />
@@ -95,7 +127,7 @@ const HomePage = () => {
                         {(searchResults.length === 0 ? allChats : searchResults).map((chat, index) => (
                             <div key={chat._id}>
                                 <hr />
-                                <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} />
+                                <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo} />
                             </div>
                         ))}
                     </div>
