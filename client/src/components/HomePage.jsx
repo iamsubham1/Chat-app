@@ -8,7 +8,6 @@ import user from '../assets/user.png';
 import { useNavigate } from 'react-router-dom';
 import { getCookie } from '@/utility/getcookie';
 
-
 const HomePage = () => {
     const token = getCookie('JWT');
     const navigate = useNavigate();
@@ -16,12 +15,10 @@ const HomePage = () => {
     const [keyword, setKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [allChats, setAllChats] = useState([]);
-    const [userInfo, setUserInfo] = useState(''); // Initialize with a default value or null
-
+    const [userInfo, setUserInfo] = useState('');
 
     const fetchAllChats = async () => {
         try {
-
             const response = await fetch('http://localhost:8080/api/chat/allChats', {
                 headers: {
                     JWT: token,
@@ -34,7 +31,6 @@ const HomePage = () => {
 
             const data = await response.json();
             setAllChats(data);
-            // console.log("Chat data:", data);
         } catch (error) {
             console.error('Error fetching all chats:', error.message);
         }
@@ -42,7 +38,6 @@ const HomePage = () => {
 
     const fetchSearchResults = async () => {
         try {
-
             const response = await fetch(`http://localhost:8080/api/user/search?search=${keyword}`, {
                 headers: {
                     JWT: token,
@@ -55,11 +50,6 @@ const HomePage = () => {
 
             const data = await response.json();
             setSearchResults(data);
-            // console.log("Search results:", data);
-            // console.log("Search results:", data);
-
-
-
         } catch (error) {
             console.error('Error fetching search results:', error.message);
         }
@@ -71,23 +61,21 @@ const HomePage = () => {
                 headers: {
                     JWT: token,
                 },
-            })
+            });
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
 
-            const userData = await response.json()
+            const userData = await response.json();
             setUserInfo(userData);
-
-
         } catch (error) {
             console.error('Error fetching user info results:', error.message);
-
         }
-    }
+    };
+
     useEffect(() => {
         if (!token) {
-            // If token is not present, navigate to login
             navigate('/login');
         }
         fetchAllChats();
@@ -124,11 +112,17 @@ const HomePage = () => {
                         </button>
                     </div>
                     <div className="chat-section w-full">
-                        {(searchResults.length === 0 ? allChats : searchResults).map((chat, index) => (
-                            <div key={chat._id}>
-                                <hr />
-                                <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo} />
+                        {((searchResults.length === 0 && allChats.length === 0) ? (
+                            <div className="no-chats-message text-white text-center mt-4">
+                                No chats to show
                             </div>
+                        ) : (
+                            (searchResults.length === 0 ? allChats : searchResults).map((chat, index) => (
+                                <div key={chat._id}>
+                                    <hr />
+                                    <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo} />
+                                </div>
+                            ))
                         ))}
                     </div>
                 </div>
