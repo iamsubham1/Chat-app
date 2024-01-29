@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+@import url('https://fonts.googleapis.com/css2?family=Diphylleia&family=Poppins:wght@300;400&display=swap');
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -73,4 +73,54 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px; /* Adjust the width as needed */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Hide the thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent; /* Hide the track */
+}
+
+
+.customBg{
+  background: rgb(124,74,186);
+background: linear-gradient(180deg, rgba(124,74,186,1) 0%, rgba(35,2,74,1) 100%);
+}
+
+.customText{
+ 
+ 
+  background: linear-gradient(90deg, rgba(125,74,180,1) 0%, rgba(250,168,90,1) 51%, rgba(125,74,180,1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+.right {
+  position: relative;
+  background-image: url(../src/assets/bg.jpg);
+  background-size: contain;
+}
+
+.right::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(8, 7, 12, 0.5); /* Adjust the color and opacity as needed */
+  backdrop-filter: blur(4px); /* Adjust the blur amount as needed */
+}
+.welcome-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
 }

@@ -37,7 +37,7 @@ const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
     }
 
     return (
-        <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-slate-400 mx-auto' onClick={handleClick}>
+        <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-[#121218]  hover:bg-[#7A48B7] mx-auto text-white' onClick={handleClick}>
             <div className='w-[13%]'>
                 {displayPic ? (
                     <img className='h-12 w-12 rounded-full' src={displayPic} alt={displayName} />
