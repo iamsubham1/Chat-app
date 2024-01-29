@@ -35,7 +35,7 @@ const LoginForm = () => {
       if (response.ok) {
         const data = await response.json();
         const cookies = new Cookies();
-        cookies.set('JWT', data.JWT, { httpOnly: false, secure: true, sameSite: 'none' })
+        cookies.set('JWT', data.JWT, { httpOnly: false, secure: true, sameSite: 'none', maxAge: 60 * 60 * 24 })
         console.log('Login successful:', data.JWT);
         alert("login successfull")
         navigate('/');

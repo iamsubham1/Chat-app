@@ -2,8 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { formatTimestamp } from '../utility/dateAndTime';
 
-const ChatCard = ({ chat, searchUser, user }) => {
-    const { chatName, participants, latestMessage, groupPic } = chat;
+const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
+    const { chatName, participants, latestMessage, groupPic, _id } = chat;
+
+
+    const handleClick = () => {
+
+        onSelectChat(_id); // Pass the chat ID to the parent component
+    };
+
 
 
     const loggedInUserId = user._id
@@ -30,7 +37,7 @@ const ChatCard = ({ chat, searchUser, user }) => {
     }
 
     return (
-        <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-slate-400 mx-auto'>
+        <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-slate-400 mx-auto' onClick={handleClick}>
             <div className='w-[13%]'>
                 {displayPic ? (
                     <img className='h-12 w-12 rounded-full' src={displayPic} alt={displayName} />
@@ -67,6 +74,8 @@ ChatCard.propTypes = {
         isGroupChat: PropTypes.bool,
     }).isRequired,
     searchUser: PropTypes.object,
+    onSelectChat: PropTypes.func.isRequired,
 };
+
 
 export default ChatCard;

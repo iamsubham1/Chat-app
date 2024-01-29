@@ -7,6 +7,8 @@ import ChatCard from './ChatCard';
 import user from '../assets/user.png';
 import { useNavigate } from 'react-router-dom';
 import { getCookie } from '@/utility/getcookie';
+import { Button } from './ui/button';
+import { logout } from '@/utility/logout';
 
 const HomePage = () => {
     const token = getCookie('JWT');
@@ -16,7 +18,14 @@ const HomePage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [allChats, setAllChats] = useState([]);
     const [userInfo, setUserInfo] = useState('');
+    const [selectedChatId, setSelectedChatId] = useState(null);
+    const [chatDetails, setChatDetails] = useState(null);
 
+    const handleChatSelect = (chatId) => {
+        setSelectedChatId(chatId);
+        // Fetch details when a chat is selected
+        fetchChatDetails(chatId);
+    };
     const fetchAllChats = async () => {
         try {
             const response = await fetch('http://localhost:8080/api/chat/allChats', {
@@ -74,6 +83,28 @@ const HomePage = () => {
         }
     };
 
+    const fetchChatDetails = async (chatId) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/message/getMessages/${chatId}`, {
+                headers: {
+                    JWT: token,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            setChatDetails(data);
+        } catch (error) {
+            console.error('Error fetching chat details:', error.message);
+        }
+    };
+
+
+
+
     useEffect(() => {
         if (!token) {
             navigate('/login');
@@ -81,10 +112,10 @@ const HomePage = () => {
         fetchAllChats();
         fetchSearchResults();
         fetchUserinfo();
-    }, [navigate, keyword]);
+    }, [keyword]);
 
     return (
-        <div className="w-screen h-screen relative flex justify-center" style={{ backgroundColor: '#030712' }}>
+        <div className=" left w-screen h-screen relative flex justify-center" style={{ backgroundColor: '#030712' }}>
             <header className="w-screen h-[10vh] bg bg-violet-700"></header>
             <div className="main-section h-[90vh] w-[95vw] absolute top-10 flex">
                 <div className="left w-[30%]" style={{ backgroundColor: '#27272A' }}>
@@ -120,14 +151,41 @@ const HomePage = () => {
                             (searchResults.length === 0 ? allChats : searchResults).map((chat, index) => (
                                 <div key={chat._id}>
                                     <hr />
-                                    <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo} />
+                                    <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo}
+                                        onSelectChat={handleChatSelect}
+                                    />
                                 </div>
                             ))
                         ))}
                     </div>
                 </div>
-                <div className="right w-[70%]" style={{ backgroundColor: '#111112' }}></div>
+                <div className="right w-[70%] bg-gray-800 text-white p-4 overflow-y-auto">
+
+                    {chatDetails && (
+                        <div>
+                            <p className="text-lg font-bold mb-4">Selected Chat ID: {selectedChatId}</p>
+                            {chatDetails.map((message, index) => (
+                                <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
+                                    <div className="flex items-center">
+                                        {message.sender._id !== userInfo._id && (
+                                            <img src={message.sender.profilePic} alt="Receiver" className="w-8 h-8 rounded-full mr-2" />
+                                        )}
+                                        <div className={`p-2 rounded-md ${message.sender._id === userInfo._id ? 'bg-blue-500' : 'bg-green-500'}`}>
+                                            <p>{message.content}</p>
+                                        </div>
+                                        {message.sender._id === userInfo._id && (
+                                            <img src={message.sender.profilePic} alt="Sender" className="w-8 h-8 rounded-full ml-2" />
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+
             </div>
+            <Button onClick={() => logout('JWT')}>Logout</Button>
         </div>
     );
 };
