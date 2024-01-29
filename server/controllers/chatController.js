@@ -9,7 +9,7 @@ const createChat = async (req, res) => {
 
         const { userId } = req.body;
         const reqUser = await req.user;
-        console.log("Request User ID:", reqUser.user._id);
+        // console.log("Request User ID:", reqUser.user._id);
 
         if (!userId) {
 

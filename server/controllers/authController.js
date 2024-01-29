@@ -49,7 +49,7 @@ const loginController = async (req, res) => {
         }
 
         const { number, password, email } = req.body;
-        console.log(req.body)
+        // console.log(req.body)
         let user = await User.findOne({ $or: [{ email: email }, { phoneNumber: number }] });
 
         if (user) {

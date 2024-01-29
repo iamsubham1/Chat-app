@@ -8,7 +8,7 @@ const currentUserDetails = async (req, res) => {
         const currentUserDetails = await User.findById(currentUser.user._id);
 
         currentUserDetails.password = null;
-        console.log(currentUserDetails)
+        // console.log(currentUserDetails)
         return res.status(200).send(currentUserDetails);
 
     } catch (error) {

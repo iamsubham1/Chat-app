@@ -9,12 +9,20 @@ import { getCookie } from '@/utility/getcookie';
 import { logout } from '@/utility/logout';
 import { IoMdSend } from "react-icons/io";
 import { TbLogout } from "react-icons/tb";
+import io from 'socket.io-client';
 
+
+const socket = io('http://localhost:8080', {
+    transports: ['websocket'],
+
+});
 
 
 const HomePage = () => {
+
     const token = getCookie('JWT');
     const navigate = useNavigate();
+
 
     const [keyword, setKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -30,8 +38,10 @@ const HomePage = () => {
         fetchChatDetails(chatId);
     };
 
+
     const handleSendMessage = async () => {
         try {
+
             const response = await fetch(`http://localhost:8080/api/message/createMessage/${selectedChatId}`, {
                 method: 'POST',
                 headers: {
@@ -48,10 +58,11 @@ const HomePage = () => {
                 throw new Error('Network response was not ok');
             }
 
-            const data = await response.json();
 
-            // Clear the message input field after sending
+            socket.emit('message', { content: messageContent, chatId: selectedChatId });
+
             setMessageContent('');
+            fetchChatDetails(selectedChatId);
         } catch (error) {
             console.error('Error sending message:', error.message);
         }
@@ -116,6 +127,7 @@ const HomePage = () => {
 
     const fetchChatDetails = async (chatId) => {
         try {
+            console.log(chatId)
             const response = await fetch(`http://localhost:8080/api/message/getMessages/${chatId}`, {
                 headers: {
                     JWT: token,
@@ -140,14 +152,58 @@ const HomePage = () => {
     });
 
 
+
     useEffect(() => {
         if (!token) {
             navigate('/login');
         }
+
         fetchAllChats();
         fetchSearchResults();
         fetchUserinfo();
-    }, [keyword]);
+
+        // Connect to Socket.IO when the component mounts
+        socket.connect();
+
+        // Log when connected to Socket.IO
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+
+        // Log when disconnected from Socket.IO
+        socket.on('disconnect', (reason) => {
+            console.log('Disconnected from Socket.IO server. Reason:', reason);
+        });
+
+        // Log any Socket.IO errors
+        socket.on('error', (error) => {
+            console.error('Socket.IO Error:', error);
+        });
+
+        // Log received messages from the server
+        socket.on('message', (data) => {
+            console.log('Received message from server:', data);
+            fetchChatDetails(data.chatId);
+
+            // Handle the received message (update state, etc.)
+        });
+
+        // Log when a message is sent to the server
+        socket.on('messageSent', (data) => {
+            console.log('Message sent to server:', data);
+            fetchChatDetails(data.chatId);
+        });
+
+
+        // Cleanup on component unmount
+        return () => {
+            // Disconnect from Socket.IO when the component unmounts
+            socket.disconnect();
+            console.log('Socket.IO disconnected on component unmount');
+
+        };
+
+    }, [keyword, socket]);
 
     return (
         <div className="w-screen h-screen relative flex justify-center customBg ">

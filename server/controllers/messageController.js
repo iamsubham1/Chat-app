@@ -7,16 +7,10 @@ const createMessage = async (req, res) => {
 
     try {
         const reqUser = await req.user;
-
-        console.log('Received request to create a new message:', req.body);
-
         if (!content || !chatId) {
             console.error('Invalid request: content and chatId are required.');
             return res.status(400).send({ error: "content and chatId required" });
         }
-
-        console.log('Creating a new message with the following details:', { sender: reqUser.user._id, content, chat: chatId });
-
         let newMessage = {
             sender: reqUser.user._id,
             content: content,
@@ -25,8 +19,6 @@ const createMessage = async (req, res) => {
 
         const createdMessage = await Message.create(newMessage);
 
-        console.log('Message created successfully:', createdMessage);
-
         // Update the associated chat's latestMessage field
         const updatedChat = await Chat.findOneAndUpdate(
             { _id: chatId },
@@ -34,15 +26,10 @@ const createMessage = async (req, res) => {
             { new: true }
         );
 
-        console.log('Chat updated with the latest message:', updatedChat);
 
         const fullMessage = await Message.findById(createdMessage._id)
             .populate("sender", "-password")
             .populate("chat");
-
-        console.log('Full message details after population:', fullMessage);
-
-        console.log('Returning the full message as the response.');
 
         return res.status(200).send(fullMessage);
     } catch (error) {
@@ -66,7 +53,6 @@ const getAllMessages = async (req, res) => {
             .populate("sender", "-password")
             .populate("chat");
 
-        console.log("Messages found:", messages);
 
         return res.status(200).send(messages);
     } catch (error) {
