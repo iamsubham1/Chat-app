@@ -6,6 +6,20 @@
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat-app</title>
+  <style>
+    input:-internal-autofill-selected {
+      color: white !important;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      transition: background-color 5000s ease-in-out 0s;
+      -webkit-text-fill-color: white !important;
+    }
+  </style>
+
 </head>
 
 <body>

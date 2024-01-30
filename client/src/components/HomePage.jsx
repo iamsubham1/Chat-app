@@ -10,6 +10,7 @@ import { logout } from '@/utility/logout';
 import { IoMdSend } from "react-icons/io";
 import { TbLogout } from "react-icons/tb";
 import io from 'socket.io-client';
+import defaultUserImage from '../assets/user.png';
 
 
 const socket = io('http://localhost:8080', {
@@ -29,15 +30,28 @@ const HomePage = () => {
     const [allChats, setAllChats] = useState([]);
     const [userInfo, setUserInfo] = useState('');
     const [selectedChatId, setSelectedChatId] = useState(null);
+
     const [chatDetails, setChatDetails] = useState(null);
     const [messageContent, setMessageContent] = useState('');
 
-    const handleChatSelect = (chatId) => {
-        setSelectedChatId(chatId);
-        // Fetch details when a chat is selected
-        fetchChatDetails(chatId);
-    };
+    const handleChatSelect = async (chatId, searchUser) => {
+        // If it's a searched user, create a new chat if not already existing
+        if (searchUser) {
+            const userId = searchUser._id;
 
+            const createdChatId = await createChatWithUser(userId);
+
+            if (createdChatId) {
+                console.log("Chat created with id:", createdChatId);
+                setSelectedChatId(createdChatId);
+                fetchChatDetails(createdChatId);
+            }
+        } else {
+            // Handle the selection of an existing chat (e.g., fetch chat details)
+            setSelectedChatId(chatId);
+            fetchChatDetails(chatId);
+        }
+    };
 
     const handleSendMessage = async () => {
         try {
@@ -145,6 +159,52 @@ const HomePage = () => {
         }
     };
 
+    const createChatWithUser = async (userId) => {
+        try {
+            console.log('Creating a new chat with user ID:', userId);
+
+            const response = await fetch('http://localhost:8080/api/chat/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    JWT: token,
+                },
+                body: JSON.stringify({
+                    userId,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error('Network response was not ok');
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+
+            if (data && data._id) {
+                console.log('New chat created with chat ID:', data._id);
+
+                // Update the state or perform any necessary actions
+                // For example, you might want to update the state of allChats or selectedChatId
+                setAllChats([...allChats, data]);
+                setSelectedChatId(data._id);
+
+                // Fetch chat details immediately after creating the chat
+                console.log("chatId or new chat is ", data._id)
+                fetchChatDetails(data._id);
+
+                return data._id; // Return the chat ID
+            } else {
+                console.error('Invalid response from the server:', data);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error creating chat:', error.message);
+            return null;
+        }
+    };
+
+
     const sortedChats = [...allChats].sort((chatA, chatB) => {
         const timeA = chatA.latestMessage ? new Date(chatA.latestMessage.createdAt) : 0;
         const timeB = chatB.latestMessage ? new Date(chatB.latestMessage.createdAt) : 0;
@@ -167,12 +227,12 @@ const HomePage = () => {
 
         // Log when connected to Socket.IO
         socket.on('connect', () => {
-            console.log('Connected to Socket.IO server');
+            // console.log('Connected to Socket.IO server');
         });
 
         // Log when disconnected from Socket.IO
         socket.on('disconnect', (reason) => {
-            console.log('Disconnected from Socket.IO server. Reason:', reason);
+            // console.log('Disconnected from Socket.IO server. Reason:', reason);
         });
 
         // Log any Socket.IO errors
@@ -182,20 +242,16 @@ const HomePage = () => {
 
         // Log received messages from the server
         socket.on('message', (data) => {
-            console.log('Received message from server:', data);
             fetchChatDetails(data.chatId);
-
-            // Handle the received message (update state, etc.)
+            fetchAllChats();
         });
 
         // Log when a message is sent to the server
         socket.on('messageSent', (data) => {
             console.log('Message sent to server:', data);
             fetchChatDetails(data.chatId);
+            fetchAllChats();
         });
-
-
-        // Cleanup on component unmount
         return () => {
             // Disconnect from Socket.IO when the component unmounts
             socket.disconnect();
@@ -203,21 +259,31 @@ const HomePage = () => {
 
         };
 
-    }, [keyword, socket]);
+    }, [keyword]);
+
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatDetails]);
+
+    const scrollToBottom = () => {
+        const messagesContainer = document.querySelector('.messagesContainer');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    };
 
     return (
-        <div className="w-screen h-screen relative flex justify-center customBg ">
-            <header className="w-screen h-[8vh] bg-[#121218] flex justify-between items-center text-[white] ">
-                <h1 className='ml-5 customText text-2xl font-bold font-sans'>. CONNECT</h1>
-
+        <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6">
+            <header className="w-screen h-[8vh] bg-[#121218] flex justify-between items-center text-[white]">
+                <h1 className='ml-5 customText text-2xl font-bold font-sans'>.CONNECT</h1>
                 <TbLogout onClick={() => logout('JWT')} className='text-2xl mr-5 cursor-pointer hover:text-[red]' />
-
             </header>
-            <div className="main-section h-[80vh] w-[95vw] absolute top-24 flex">
+            <div className="main-section h-[80vh] w-[95vw] flex">
                 <div className="left w-[30%] bg-[#121218] " >
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
-                            <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic} alt="User" />
+                            <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic || defaultUserImage} alt="User" />
                             <p className='capitalize'>{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
@@ -267,14 +333,14 @@ const HomePage = () => {
                                         <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
                                             <div className="flex items-center">
                                                 {message.sender._id !== userInfo._id && (
-                                                    <img src={message.sender.profilePic} alt="Receiver" className="w-8 h-8 rounded-full mr-2" />
+                                                    <img src={message.sender.profilePic || defaultUserImage} alt="Receiver" className="w-8 h-8 rounded-full mr-2" />
                                                 )}
                                                 <div className={`p-2 rounded-md ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
                                                     <p> {message.content}</p>
                                                 </div>
                                                 {
                                                     message.sender._id === userInfo._id && (
-                                                        <img src={message.sender.profilePic} alt="Sender" className="w-8 h-8 rounded-full ml-2" />
+                                                        <img src={message.sender.profilePic || defaultUserImage} alt="Sender" className="w-8 h-8 rounded-full ml-2" />
                                                     )
                                                 }
                                             </div>
@@ -288,8 +354,7 @@ const HomePage = () => {
                             )
                         ) : (
                             <div className="welcome-message text-white text-center mt-4 text-medium">
-                                <h1 className='text-2xl'> Welcome to . <span className='customText font-bold text-2xl'>CONNECT</span></h1>
-
+                                <h1 className='text-2xl'> Welcome to  <span className='customText font-bold text-2xl'>.CONNECT</span></h1>
                                 A Real time Chat-Application... !
                             </div>
                         )}
@@ -309,7 +374,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
-
+            <footer className='text-white text-left p-4 bg-[#12121846] w-full '>© Subham Das</footer>
         </div>
     );
 };

@@ -1,7 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Diphylleia&family=Poppins:wght@300;400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Diphylleia&family=Poppins:wght@300;400&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -91,7 +92,7 @@
 
 .customBg{
   background: rgb(124,74,186);
-background: linear-gradient(180deg, rgba(124,74,186,1) 0%, rgba(35,2,74,1) 100%);
+background: linear-gradient(180deg, rgb(80, 42, 126) 0%, rgba(35,2,74,1) 100%);
 }
 
 .customText{
@@ -107,7 +108,21 @@ background: linear-gradient(180deg, rgba(124,74,186,1) 0%, rgba(35,2,74,1) 100%)
   background-image: url(../src/assets/bg.jpg);
   background-size: contain;
 }
+.blackBg{
 
+  background-image: url(../src/assets/bg.jpg);
+  background-size: contain;
+}
+.blackBg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.555); /* Adjust the color and opacity as needed */
+  backdrop-filter: blur(4px); /* Adjust the blur amount as needed */
+}
 .right::before {
   content: "";
   position: absolute;
@@ -123,4 +138,25 @@ background: linear-gradient(180deg, rgba(124,74,186,1) 0%, rgba(35,2,74,1) 100%)
   top: 50%;
   left: 50%;
   transform: translate(-50%, -70%);
+}
+.loginPage{
+  display: flex;
+  flex-direction: column;
+ 
+  align-items: center;
+}
+
+.loginformContainer{
+ 
+  width: 100vw;
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.signup{
+  flex-direction: column;
+  align-items:center;
+  justify-content:space-between;
+  
 }

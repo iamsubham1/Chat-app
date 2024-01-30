@@ -1,21 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { formatTimestamp } from '../utility/dateAndTime';
+import defaultUserImage from '../assets/user.png';
 
 const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
+
     const { chatName, participants, latestMessage, groupPic, _id } = chat;
 
-
+    if (searchUser) {
+        console.log("searched user id is :", searchUser._id)
+    }
     const handleClick = () => {
-
-        onSelectChat(_id); // Pass the chat ID to the parent component
+        onSelectChat(_id, searchUser);
     };
 
-
-
-    const loggedInUserId = user._id
-    // console.log(userInformation)
-
+    const loggedInUserId = user._id;
     const isGroupChat = chat.isGroupChat;
 
     // Check who's info to show in card (group or receiver)
@@ -27,7 +26,6 @@ const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
     const displayName = searchUser?.name || receiverName;
     const displayPic = searchUser?.profilePic || receiverAvatar;
 
-    // Determine the message content to display
     let displayMessage;
 
     if (searchUser && !latestMessage) {
@@ -37,13 +35,10 @@ const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
     }
 
     return (
-        <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-[#121218]  hover:bg-[#7A48B7] mx-auto text-white' onClick={handleClick}>
+        <div className='flex justify-evenly items-center py-2 group cursor-pointer bg-[#121218]  hover:bg-[#7a48b788] mx-auto text-white' onClick={handleClick}>
             <div className='w-[13%]'>
-                {displayPic ? (
-                    <img className='h-12 w-12 rounded-full' src={displayPic} alt={displayName} />
-                ) : (
-                    <img className='h-12 w-12 rounded-full' src={'default-pic-url'} alt={displayName} />
-                )}
+                <img className='h-12 w-12 rounded-full' src={displayPic || defaultUserImage} alt={displayName} />
+
             </div>
             <div className='w-[80%]'>
                 <div className='flex justify-between items-center'>
@@ -76,6 +71,5 @@ ChatCard.propTypes = {
     searchUser: PropTypes.object,
     onSelectChat: PropTypes.func.isRequired,
 };
-
 
 export default ChatCard;
