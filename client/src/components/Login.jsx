@@ -3,9 +3,12 @@ import Cookies from 'universal-cookie';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FaRegEye, FaEyeSlash } from 'react-icons/fa';
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
+
 const LoginForm = () => {
   const navigate = useNavigate();
-
+  const { toast } = useToast()
   const [userData, setUserData] = useState({
     email: '',
     password: '',
@@ -43,9 +46,16 @@ const LoginForm = () => {
         const data = await response.json();
         const cookies = new Cookies();
         cookies.set('JWT', data.JWT, { httpOnly: false, secure: true, sameSite: 'none', maxAge: 60 * 60 * 24 })
-        console.log('Login successful:', data.JWT);
-        alert("login successfull")
-        navigate('/');
+
+        toast({
+          title: "login successfull",
+
+        })
+
+        setTimeout(() => {
+          navigate('/');
+        }, 1200);
+
       }
 
       else if (response.status === 400) {
@@ -56,11 +66,6 @@ const LoginForm = () => {
     } catch (error) {
       console.error('Network error:', error);
     }
-
-
-
-    console.log('Email:', userData.email);
-    console.log('Password:', userData.password);
     setUserData: []
   };
 
@@ -124,7 +129,7 @@ const LoginForm = () => {
         </div>
 
       </div>
-
+      <Toaster />
     </div>
   );
 };

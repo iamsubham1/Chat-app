@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FaRegEye, FaEyeSlash } from 'react-icons/fa';
-
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
 
 const Signup = () => {
+    const { toast } = useToast()
+
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
@@ -39,9 +42,15 @@ const Signup = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                alert('Account created');
-                console.log(data);
-                navigate('/login');
+                toast({
+                    title: "Account Created Successfully",
+
+                })
+
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1200);
+
             } else {
                 alert('Something bad happened');
             }
@@ -132,8 +141,9 @@ const Signup = () => {
                                 Login</Link></h6>
                         </div>
                     </form>
-                </div></div>
-
+                </div>
+            </div>
+            <Toaster />
         </div>
 
     );

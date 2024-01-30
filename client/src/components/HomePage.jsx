@@ -11,7 +11,14 @@ import { IoMdSend } from "react-icons/io";
 import { TbLogout } from "react-icons/tb";
 import io from 'socket.io-client';
 import defaultUserImage from '../assets/user.png';
-
+import {
+    getAllChats,
+    searchUsers,
+    getUserInfo,
+    getChatDetails,
+    createChatWithUser,
+    sendMessage
+} from '../apis/api';
 
 const socket = io('http://localhost:8080', {
     transports: ['websocket'],
@@ -20,34 +27,30 @@ const socket = io('http://localhost:8080', {
 
 
 const HomePage = () => {
-
     const token = getCookie('JWT');
     const navigate = useNavigate();
-
 
     const [keyword, setKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [allChats, setAllChats] = useState([]);
     const [userInfo, setUserInfo] = useState('');
     const [selectedChatId, setSelectedChatId] = useState(null);
-
+    const [selectedChatInfo, setSelectedChatInfo] = useState(null);
     const [chatDetails, setChatDetails] = useState(null);
     const [messageContent, setMessageContent] = useState('');
 
+
+
     const handleChatSelect = async (chatId, searchUser) => {
-        // If it's a searched user, create a new chat if not already existing
         if (searchUser) {
             const userId = searchUser._id;
-
-            const createdChatId = await createChatWithUser(userId);
+            const createdChatId = await createChatWithUser(token, userId);
 
             if (createdChatId) {
-                console.log("Chat created with id:", createdChatId);
                 setSelectedChatId(createdChatId);
                 fetchChatDetails(createdChatId);
             }
         } else {
-            // Handle the selection of an existing chat (e.g., fetch chat details)
             setSelectedChatId(chatId);
             fetchChatDetails(chatId);
         }
@@ -55,28 +58,13 @@ const HomePage = () => {
 
     const handleSendMessage = async () => {
         try {
+            const success = await sendMessage(token, selectedChatId, messageContent);
 
-            const response = await fetch(`http://localhost:8080/api/message/createMessage/${selectedChatId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    JWT: token,
-                },
-                body: JSON.stringify({
-                    content: messageContent,
-                    chatId: selectedChatId,
-                }),
-            });
-            if (!response.ok) {
-                console.error('Network response was not ok');
-                throw new Error('Network response was not ok');
+            if (success) {
+                socket.emit('message', { content: messageContent, chatId: selectedChatId });
+                setMessageContent('');
+                fetchChatDetails(selectedChatId);
             }
-
-
-            socket.emit('message', { content: messageContent, chatId: selectedChatId });
-
-            setMessageContent('');
-            fetchChatDetails(selectedChatId);
         } catch (error) {
             console.error('Error sending message:', error.message);
         }
@@ -84,17 +72,7 @@ const HomePage = () => {
 
     const fetchAllChats = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/chat/allChats', {
-                headers: {
-                    JWT: token,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
+            const data = await getAllChats(token);
             setAllChats(data);
         } catch (error) {
             console.error('Error fetching all chats:', error.message);
@@ -103,17 +81,7 @@ const HomePage = () => {
 
     const fetchSearchResults = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/user/search?search=${keyword}`, {
-                headers: {
-                    JWT: token,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
+            const data = await searchUsers(token, keyword);
             setSearchResults(data);
         } catch (error) {
             console.error('Error fetching search results:', error.message);
@@ -122,85 +90,19 @@ const HomePage = () => {
 
     const fetchUserinfo = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/user/profile', {
-                headers: {
-                    JWT: token,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const userData = await response.json();
+            const userData = await getUserInfo(token);
             setUserInfo(userData);
         } catch (error) {
-            console.error('Error fetching user info results:', error.message);
+            console.error('Error fetching user info:', error.message);
         }
     };
 
     const fetchChatDetails = async (chatId) => {
         try {
-            console.log(chatId)
-            const response = await fetch(`http://localhost:8080/api/message/getMessages/${chatId}`, {
-                headers: {
-                    JWT: token,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
+            const data = await getChatDetails(token, chatId);
             setChatDetails(data);
         } catch (error) {
             console.error('Error fetching chat details:', error.message);
-        }
-    };
-
-    const createChatWithUser = async (userId) => {
-        try {
-            console.log('Creating a new chat with user ID:', userId);
-
-            const response = await fetch('http://localhost:8080/api/chat/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    JWT: token,
-                },
-                body: JSON.stringify({
-                    userId,
-                }),
-            });
-
-            if (!response.ok) {
-                console.error('Network response was not ok');
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-
-            if (data && data._id) {
-                console.log('New chat created with chat ID:', data._id);
-
-                // Update the state or perform any necessary actions
-                // For example, you might want to update the state of allChats or selectedChatId
-                setAllChats([...allChats, data]);
-                setSelectedChatId(data._id);
-
-                // Fetch chat details immediately after creating the chat
-                console.log("chatId or new chat is ", data._id)
-                fetchChatDetails(data._id);
-
-                return data._id; // Return the chat ID
-            } else {
-                console.error('Invalid response from the server:', data);
-                return null;
-            }
-        } catch (error) {
-            console.error('Error creating chat:', error.message);
-            return null;
         }
     };
 
@@ -211,8 +113,6 @@ const HomePage = () => {
         return timeB - timeA;
     });
 
-
-
     useEffect(() => {
         if (!token) {
             navigate('/login');
@@ -222,49 +122,56 @@ const HomePage = () => {
         fetchSearchResults();
         fetchUserinfo();
 
-        // Connect to Socket.IO when the component mounts
         socket.connect();
 
-        // Log when connected to Socket.IO
         socket.on('connect', () => {
             // console.log('Connected to Socket.IO server');
         });
 
-        // Log when disconnected from Socket.IO
         socket.on('disconnect', (reason) => {
             // console.log('Disconnected from Socket.IO server. Reason:', reason);
         });
 
-        // Log any Socket.IO errors
         socket.on('error', (error) => {
             console.error('Socket.IO Error:', error);
         });
 
-        // Log received messages from the server
         socket.on('message', (data) => {
             fetchChatDetails(data.chatId);
             fetchAllChats();
         });
 
-        // Log when a message is sent to the server
         socket.on('messageSent', (data) => {
             console.log('Message sent to server:', data);
             fetchChatDetails(data.chatId);
             fetchAllChats();
         });
+
+        socket.on('userTyping', ({ userId, chatId }) => {
+            // Handle typing status for the user with userId in the chat with chatId
+            console.log(`${userId} is typing in chat ${chatId}`);
+            // You might update the UI to display the typing status for the corresponding user.
+        });
+
+        socket.on('userStoppedTyping', ({ userId, chatId }) => {
+            // Handle when the user with userId stops typing in the chat with chatId
+            console.log(`${userId} stopped typing in chat ${chatId}`);
+            // You might update the UI to remove the typing status for the corresponding user.
+        });
         return () => {
-            // Disconnect from Socket.IO when the component unmounts
             socket.disconnect();
             console.log('Socket.IO disconnected on component unmount');
-
         };
-
     }, [keyword]);
 
 
     useEffect(() => {
+        if (selectedChatId) {
+            const selectedChat = allChats.find(chat => chat._id === selectedChatId);
+            setSelectedChatInfo(selectedChat);
+        }
         scrollToBottom();
-    }, [chatDetails]);
+    }, [chatDetails, selectedChatId, allChats]);
 
     const scrollToBottom = () => {
         const messagesContainer = document.querySelector('.messagesContainer');
@@ -325,7 +232,17 @@ const HomePage = () => {
                     </div>
                 </div>
                 <div className="right w-[70%] text-white p-4 overflow-y-auto relative grid">
+                    <div className="top-10 left-0 z-10 flex items-center mb-4 max-h-[50px]">
+                        {selectedChatInfo && (
+                            <img className="w-10 h-10 rounded-full mr-5" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
+                        )}
+                        <h6 className='z-10 text-[#a882d1] text-xl capitalize font-semibold' >
+                            {selectedChatInfo ? ` ${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
+                        </h6>
+                    </div>
+
                     <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-10'>
+
                         {selectedChatId ? (
                             chatDetails && chatDetails.length > 0 ? (
                                 <div>
@@ -367,9 +284,12 @@ const HomePage = () => {
                             placeholder="Type your message..."
                             onChange={(e) => setMessageContent(e.target.value)}
                             value={messageContent}
+
+
                         />
 
                         <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
+
 
                     </div>
                 </div>
