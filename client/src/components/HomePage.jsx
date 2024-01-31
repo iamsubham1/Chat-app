@@ -11,6 +11,7 @@ import { IoMdSend } from "react-icons/io";
 import { TbLogout } from "react-icons/tb";
 import io from 'socket.io-client';
 import defaultUserImage from '../assets/user.png';
+
 import {
     getAllChats,
     searchUsers,
@@ -19,6 +20,7 @@ import {
 
     sendMessage
 } from '../apis/api';
+import TypingCard from './TypingCard';
 
 const socket = io('http://localhost:8080', {
     transports: ['websocket'],
@@ -38,6 +40,8 @@ const HomePage = () => {
     const [selectedChatInfo, setSelectedChatInfo] = useState(null);
     const [chatDetails, setChatDetails] = useState(null);
     const [messageContent, setMessageContent] = useState('');
+    const [istyping, setIsTyping] = useState(false);
+    const [showTyping, setShowTyping] = useState(false);
 
 
     const handleChatSelect = async (chatId, searchUser) => {
@@ -60,8 +64,6 @@ const HomePage = () => {
         }
     };
 
-
-
     const handleSendMessage = async () => {
         try {
             const success = await sendMessage(token, selectedChatId, messageContent);
@@ -76,7 +78,6 @@ const HomePage = () => {
             console.error('Error sending message:', error.message);
         }
     };
-
 
     const createChatWithUser = async (userId) => {
         try {
@@ -178,6 +179,20 @@ const HomePage = () => {
     }, [keyword]);
 
 
+    useEffect(() => {
+        if (selectedChatId && istyping) {
+            socket.emit('typing', { chatId: selectedChatId, isTyping: true });
+
+        }
+
+        return () => {
+            if (selectedChatId) {
+                socket.emit('typing', { chatId: selectedChatId, isTyping: false });
+            }
+        };
+    }, [istyping, selectedChatId])
+
+
 
     useEffect(() => {
         if (!token) {
@@ -203,11 +218,23 @@ const HomePage = () => {
         });
 
         socket.on('message', (data) => {
-            // console.log("sent message", data.content)
+            console.log("sent message", data.content)
             fetchChatDetails(data.chatId);
             fetchAllChats();
         });
 
+        socket.on('typing', (data) => {
+            console.log("typing status on client side is ", data.isTyping)
+            // console.log("typing user is ", userId)
+            if (data.isTyping) {
+                setShowTyping(true)
+            } else {
+                setShowTyping(false)
+
+            }
+
+
+        });
 
         return () => {
             socket.disconnect();
@@ -227,7 +254,7 @@ const HomePage = () => {
     const scrollToBottom = () => {
         const messagesContainer = document.querySelector('.messagesContainer');
         if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight
         }
     };
 
@@ -307,6 +334,7 @@ const HomePage = () => {
                         <h6 className='z-10 text-[#a882d1] text-xl capitalize font-semibold' >
                             {selectedChatInfo ? ` ${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
                         </h6>
+                        {/*add here else*/}
                     </div>
 
                     <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-10'>
@@ -329,17 +357,24 @@ const HomePage = () => {
                                                     )
                                                 }
                                             </div>
+
                                             <div className="bottom-0 right-0 w-[100%]  py-4 px-6 bg-[#30303065] flex items-center absolute">
+
                                                 <input
                                                     className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
                                                     type="text"
                                                     placeholder="Type your message..."
                                                     onChange={(e) => {
                                                         setMessageContent(e.target.value);
-
                                                     }}
-
-
+                                                    onFocus={() => {
+                                                        setIsTyping(true);
+                                                        console.log("Is Typing: true");
+                                                    }}
+                                                    onBlur={() => {
+                                                        setIsTyping(false);
+                                                        console.log("Is Typing: false");
+                                                    }}
                                                     value={messageContent}
 
 
@@ -366,12 +401,7 @@ const HomePage = () => {
                                                 setMessageContent(e.target.value);
 
                                             }}
-
-
-                                            value={messageContent}
-
-
-                                        />
+                                            value={messageContent} />
 
                                         <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
 
@@ -386,11 +416,16 @@ const HomePage = () => {
                                 A Real time Chat-Application... !
                             </div>
                         )}
+
+
                     </div>
-
-
+                    {showTyping && (
+                        <TypingCard className=".typingCard " />
+                    )}
 
                 </div>
+
+
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full '>© Subham Das</footer>
         </div>

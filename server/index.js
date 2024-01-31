@@ -51,11 +51,20 @@ const startServer = async () => {
 
             // Handle events (e.g., sending/receiving messages)
             socket.on('message', (data) => {
-                console.log('Received message:', data);
+                console.log('Received message:', data.chatId);
                 io.emit('message', data);
             });
 
+
+            socket.on('typing', ({ chatId, isTyping }) => {
+                // Broadcast the typing status to all users in the chat
+                console.log(`Received typing status from user ${socket.userId} in chat ${chatId}: ${isTyping}`);
+
+                socket.broadcast.emit('typing', { userId: socket.userId, isTyping });
+            });
+
         });
+
 
         server.listen(port, () => {
             console.log(`Server is running on ${port}`);

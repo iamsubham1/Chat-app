@@ -8,9 +8,11 @@ const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
     const { chatName, participants, latestMessage, groupPic, _id } = chat;
 
     if (searchUser) {
-        console.log("searched user id is :", searchUser._id)
+        // console.log("searched user id is :", searchUser._id)
     }
     const handleClick = () => {
+
+        //chat>-id and searched user info to get the chat further down the line..
         onSelectChat(_id, searchUser);
     };
 
