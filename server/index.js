@@ -54,22 +54,7 @@ const startServer = async () => {
                 console.log('Received message:', data);
                 io.emit('message', data);
             });
-            socket.on('startTyping', (chatId) => {
-                typingUsers[chatId] = typingUsers[chatId] || [];
-                typingUsers[chatId].push(socket.id);
 
-                // Broadcast to all clients in the chat that someone is typing
-                io.to(chatId).emit('userTyping', { userId: socket.id });
-            });
-
-            socket.on('stopTyping', (chatId) => {
-                if (typingUsers[chatId]) {
-                    typingUsers[chatId] = typingUsers[chatId].filter((userId) => userId !== socket.id);
-
-                    // Broadcast to all clients in the chat that someone stopped typing
-                    io.to(chatId).emit('userStoppedTyping', { userId: socket.id });
-                }
-            });
         });
 
         server.listen(port, () => {

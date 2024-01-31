@@ -77,59 +77,30 @@ export const getChatDetails = async (token, chatId) => {
     }
 };
 
-export const createChatWithUser = async (token, userId) => {
+export const sendMessage = async (token, chatId, messageContent) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/chat/create`, {
+        const response = await fetch(`${API_BASE_URL}/api/message/createMessage/${chatId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 JWT: token,
             },
             body: JSON.stringify({
-                userId,
+                content: messageContent,
+                chatId: chatId,
             }),
         });
 
         if (!response.ok) {
+            console.error('Network response was not ok');
             throw new Error('Network response was not ok');
         }
 
-        const data = await response.json();
-
-        if (data && data._id) {
-            return data._id;
-        } else {
-            console.error('Invalid response from the server:', data);
-            return null;
-        }
+        return true;
     } catch (error) {
-        console.error('Error creating chat:', error.message);
-        throw error;
+        console.error('Error sending message:', error.message);
+        return false;
     }
-};
-
-
-export const sendMessage = async (token, payload) => {
-    const response = await fetch(`${baseUrl}/api/message/createMessage/${payload.chatId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            JWT: token,
-        },
-        body: JSON.stringify({
-            content: payload.content,
-            chatId: payload.chatId,
-        }),
-    });
-
-    if (!response.ok) {
-        console.error('Network response was not ok');
-        throw new Error('Network response was not ok');
-    }
-
-    socket.emit('message', { content: payload.content, chatId: payload.chatId });
-
-    return response.json();
 };
 
 

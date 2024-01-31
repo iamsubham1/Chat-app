@@ -16,7 +16,7 @@ import {
     searchUsers,
     getUserInfo,
     getChatDetails,
-    createChatWithUser,
+
     sendMessage
 } from '../apis/api';
 
@@ -40,33 +40,86 @@ const HomePage = () => {
     const [messageContent, setMessageContent] = useState('');
 
 
-
     const handleChatSelect = async (chatId, searchUser) => {
+        // If it's a searched user, create a new chat if not already existing
         if (searchUser) {
             const userId = searchUser._id;
-            const createdChatId = await createChatWithUser(token, userId);
+            console.log(userId)
+
+            const createdChatId = await createChatWithUser(userId);
 
             if (createdChatId) {
+                console.log("Chat created with id:", createdChatId);
                 setSelectedChatId(createdChatId);
                 fetchChatDetails(createdChatId);
             }
         } else {
+            // Handle the selection of an existing chat (e.g., fetch chat details)
             setSelectedChatId(chatId);
             fetchChatDetails(chatId);
         }
     };
 
+
+
     const handleSendMessage = async () => {
         try {
             const success = await sendMessage(token, selectedChatId, messageContent);
 
-            if (success) {
+
+            if (success) {              //data
                 socket.emit('message', { content: messageContent, chatId: selectedChatId });
                 setMessageContent('');
                 fetchChatDetails(selectedChatId);
             }
         } catch (error) {
             console.error('Error sending message:', error.message);
+        }
+    };
+
+
+    const createChatWithUser = async (userId) => {
+        try {
+            console.log('Creating a new chat with user ID:', userId);
+
+            const response = await fetch('http://localhost:8080/api/chat/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    JWT: token,
+                },
+                body: JSON.stringify({
+                    userId,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error('Network response was not ok');
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+
+            if (data && data._id) {
+                console.log('New chat created with chat ID:', data._id);
+
+                // Update the state or perform any necessary actions
+
+                setAllChats([...allChats, data]);
+                setSelectedChatId(data._id);
+
+                // Fetch chat details immediately after creating the chat
+                console.log("chatId or new chat is ", data._id)
+                fetchChatDetails(data._id);
+
+                return data._id; // Return the chat ID
+            } else {
+                console.error('Invalid response from the server:', data);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error creating chat:', error.message);
+            return null;
         }
     };
 
@@ -113,6 +166,19 @@ const HomePage = () => {
         return timeB - timeA;
     });
 
+
+    useEffect(() => {
+        if (keyword !== '') {
+            // If keyword is not empty, fetch search results
+            fetchSearchResults();
+        } else {
+            setKeyword("")
+            fetchSearchResults()
+        }
+    }, [keyword]);
+
+
+
     useEffect(() => {
         if (!token) {
             navigate('/login');
@@ -137,32 +203,17 @@ const HomePage = () => {
         });
 
         socket.on('message', (data) => {
+            // console.log("sent message", data.content)
             fetchChatDetails(data.chatId);
             fetchAllChats();
         });
 
-        socket.on('messageSent', (data) => {
-            console.log('Message sent to server:', data);
-            fetchChatDetails(data.chatId);
-            fetchAllChats();
-        });
 
-        socket.on('userTyping', ({ userId, chatId }) => {
-            // Handle typing status for the user with userId in the chat with chatId
-            console.log(`${userId} is typing in chat ${chatId}`);
-            // You might update the UI to display the typing status for the corresponding user.
-        });
-
-        socket.on('userStoppedTyping', ({ userId, chatId }) => {
-            // Handle when the user with userId stops typing in the chat with chatId
-            console.log(`${userId} stopped typing in chat ${chatId}`);
-            // You might update the UI to remove the typing status for the corresponding user.
-        });
         return () => {
             socket.disconnect();
-            console.log('Socket.IO disconnected on component unmount');
+            // console.log('Socket.IO disconnected on component unmount');
         };
-    }, [keyword]);
+    }, []);
 
 
     useEffect(() => {
@@ -204,11 +255,28 @@ const HomePage = () => {
                             className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black"
                             type="input"
                             placeholder="Search or start new chat"
-                            onChange={(e) => setKeyword(e.target.value)}
+                            onChange={(e) => {
+                                setKeyword(e.target.value);
+                                () => {
+
+                                    fetchSearchResults()
+                                }
+
+                            }}
                             value={keyword}
                         />
-                        <button className="text-white" onClick={fetchSearchResults}>
-                            <FaFilter />
+
+                        {/* change this on click to clear */}
+                        <button className="text-white" >
+
+                            <FaFilter onClick={() => {
+                                {
+                                    setKeyword("")
+
+                                }
+
+                            }
+                            } />
                         </button>
                     </div>
                     <div className="chat-section w-full ">
@@ -261,13 +329,56 @@ const HomePage = () => {
                                                     )
                                                 }
                                             </div>
+                                            <div className="bottom-0 right-0 w-[100%]  py-4 px-6 bg-[#30303065] flex items-center absolute">
+                                                <input
+                                                    className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
+                                                    type="text"
+                                                    placeholder="Type your message..."
+                                                    onChange={(e) => {
+                                                        setMessageContent(e.target.value);
+
+                                                    }}
+
+
+                                                    value={messageContent}
+
+
+                                                />
+
+                                                <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
+
+
+                                            </div>
+
                                         </div>
+
                                     ))}
                                 </div>
                             ) : (
                                 <div className="no-messages-message text-white text-center mt-4">
                                     No messages to show
+                                    <div className="bottom-0 right-0 w-[100%]  py-4 px-6 bg-[#30303065] flex items-center absolute">
+                                        <input
+                                            className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
+                                            type="text"
+                                            placeholder="Type your message..."
+                                            onChange={(e) => {
+                                                setMessageContent(e.target.value);
+
+                                            }}
+
+
+                                            value={messageContent}
+
+
+                                        />
+
+                                        <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
+
+
+                                    </div>
                                 </div>
+
                             )
                         ) : (
                             <div className="welcome-message text-white text-center mt-4 text-medium">
@@ -277,24 +388,11 @@ const HomePage = () => {
                         )}
                     </div>
 
-                    <div className="bottom-0 right-0 w-[100%]  py-4 px-6 bg-[#30303065] flex items-center absolute">
-                        <input
-                            className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
-                            type="text"
-                            placeholder="Type your message..."
-                            onChange={(e) => setMessageContent(e.target.value)}
-                            value={messageContent}
 
 
-                        />
-
-                        <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
-
-
-                    </div>
                 </div>
             </div>
-            <footer className='text-white text-left p-4 bg-[#12121846] w-full '>© Subham Das</footer>
+            <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full '>© Subham Das</footer>
         </div>
     );
 };
