@@ -86,11 +86,9 @@ const createGroup = async (req, res) => {
     let { participants, chatName, groupPic } = req.body;
     const reqUser = await req.user;
 
-    console.log("Before converting to ObjectId, participants =", participants);
+    console.log("participants :", participants);
 
-    // Convert participants to an array of ObjectId
 
-    console.log("After converting to ObjectId, participants =", participants);
 
     participants.push(reqUser.user._id);
     participants.push(...participants);

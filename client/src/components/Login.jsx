@@ -48,13 +48,14 @@ const LoginForm = () => {
         cookies.set('JWT', data.JWT, { httpOnly: false, secure: true, sameSite: 'none', maxAge: 60 * 60 * 24 })
 
         toast({
+
           title: "login successfull",
 
         })
 
         setTimeout(() => {
           navigate('/');
-        }, 1200);
+        }, 1000);
 
       }
 

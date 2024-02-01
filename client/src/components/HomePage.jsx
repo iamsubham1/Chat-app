@@ -167,7 +167,9 @@ const HomePage = () => {
         return timeB - timeA;
     });
 
-
+    const handleProfile = () => {
+        navigate('/profile')
+    }
     useEffect(() => {
         if (keyword !== '') {
             // If keyword is not empty, fetch search results
@@ -268,7 +270,7 @@ const HomePage = () => {
                 <div className="left w-[30%] bg-[#121218] " >
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
-                            <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic || defaultUserImage} alt="User" />
+                            <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
                             <p className='capitalize'>{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
@@ -384,7 +386,9 @@ const HomePage = () => {
 
 
                                             </div>
-
+                                            {showTyping && (
+                                                <TypingCard className=".typingCard " />
+                                            )}
                                         </div>
 
                                     ))}
@@ -419,9 +423,7 @@ const HomePage = () => {
 
 
                     </div>
-                    {showTyping && (
-                        <TypingCard className=".typingCard " />
-                    )}
+
 
                 </div>
 
