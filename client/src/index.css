@@ -102,6 +102,7 @@ background: linear-gradient(180deg, rgb(60, 28, 100) 0%, rgb(3, 0, 7) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   caret-color: transparent;
+ 
 }
 .customBorder{
  
@@ -199,7 +200,7 @@ div#wave .dot:nth-child(3) {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 20;
+  z-index: 10;
   width: 100%;
   height: 100vh;
 }
@@ -208,7 +209,7 @@ div#wave .dot:nth-child(3) {
   background-color: rgb(0, 0, 0);
   padding: 20px;
   border-radius: 8px;
-  z-index: 30;
+  z-index: 10;
   width: 25vw;
   max-height: 50vh; 
  
@@ -253,13 +254,7 @@ border: 2px solid rgba(255, 255, 255, 0);
 
 .profile-pic{
   width: 35%;
-
   background: #a46ebd; 
-
-
-
-
-
   border: 3px solid #00000000;
   border-radius: 50%;
   padding:3px;
@@ -333,6 +328,6 @@ color:#E7E9EB;
 }
 .homeBtn{
   position: relative;
-  z-index: 100;;
+  z-index: 10;;
 }
 

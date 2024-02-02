@@ -3,7 +3,7 @@ const Chat = require("../models/chatSchema");
 const User = require("../models/UserSchema");
 
 
-//create a chat (tested and works)
+//create a chat (tested and works) (used in client)
 const createChat = async (req, res) => {
     try {
 
@@ -60,7 +60,7 @@ const createChat = async (req, res) => {
     }
 };
 
-//get all chats(tested and works)
+//get all chats(tested and works) (used in client)
 const getAllChats = async (req, res) => {
     try {
         const reqUser = await req.user;
@@ -87,9 +87,6 @@ const createGroup = async (req, res) => {
     const reqUser = await req.user;
 
     console.log("participants :", participants);
-
-
-
     participants.push(reqUser.user._id);
     participants.push(...participants);
 

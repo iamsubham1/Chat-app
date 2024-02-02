@@ -13,7 +13,7 @@ const verifyUser = (req, res, next) => {
         userData.user._id = new ObjectId(userData.user._id);
 
         req.user = userData;
-        console.log("decoded data:", userData);
+        // console.log("decoded data:", userData);
         next();
     } catch (error) {
         res.status(401).send({ error: "Please authenticate using a valid token" });

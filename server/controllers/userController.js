@@ -1,6 +1,6 @@
 const User = require('../models/UserSchema')
 
-//current user profile info
+//current user profile info (used in client)
 const currentUserDetails = async (req, res) => {
     try {
         const currentUser = req.user; //got the user info
@@ -16,7 +16,7 @@ const currentUserDetails = async (req, res) => {
     }
 }
 
-// get info about a user by id (tested and works)
+// get info about a user by id (tested and works) 
 const findUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -32,7 +32,7 @@ const findUserById = async (req, res) => {
     }
 }
 
-//take keyword and search for the user (tested and works)
+//take keyword and search for the user (tested and works) (used in client)
 const searchUser = async (req, res) => {
     try {
         const page = req.query.page || 1;
@@ -49,7 +49,7 @@ const searchUser = async (req, res) => {
 
         const searchedUser = await User.find(keyword).select("name profilePic").skip(skip).limit(limits);
 
-
+        // console.log(searchedUser)
 
         res.status(200).send(searchedUser);
     } catch (error) {
@@ -58,7 +58,7 @@ const searchUser = async (req, res) => {
     }
 };
 
-//edit user info
+//edit user info (used in client)
 const editUser = async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true })

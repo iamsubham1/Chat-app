@@ -1,7 +1,7 @@
 const Chat = require("../models/chatSchema");
 const Message = require("../models/MessageSchema");
 
-//tested and works
+//tested and works (used in client)
 const createMessage = async (req, res) => {
     const { content, chatId } = req.body;
 
@@ -37,7 +37,7 @@ const createMessage = async (req, res) => {
         return res.status(400).send(error.message);
     }
 };
-
+// (used in client)
 const getAllMessages = async (req, res) => {
     try {
         const chatId = req.params.id;

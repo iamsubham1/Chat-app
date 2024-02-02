@@ -11,6 +11,11 @@ import { IoMdSend } from "react-icons/io";
 import { TbLogout } from "react-icons/tb";
 import io from 'socket.io-client';
 import defaultUserImage from '../assets/user.png';
+import { MdGroups } from "react-icons/md";
+import Modal from 'react-modal';
+import ModalComponent from '../components/Modal'; // Import your modal component
+
+
 
 import {
     getAllChats,
@@ -29,6 +34,8 @@ const socket = io('http://localhost:8080', {
 
 
 const HomePage = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const token = getCookie('JWT');
     const navigate = useNavigate();
 
@@ -244,6 +251,13 @@ const HomePage = () => {
         };
     }, []);
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     useEffect(() => {
         if (selectedChatId) {
@@ -271,6 +285,7 @@ const HomePage = () => {
 
             <div className="main-section h-[80vh] w-[95vw] flex ">
                 <div className="left w-[30%] bg-[#121218] overflow-y-scroll custom-scrollbar " >
+
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
                             <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
@@ -282,6 +297,7 @@ const HomePage = () => {
                             <IoMdMore className='text-[#c7c7c7]' />
                         </div>
                     </div>
+
                     <div className="search-bar px-3 py-4 flex space-x-10 items-center text-white">
                         <input
                             className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black "
@@ -299,16 +315,9 @@ const HomePage = () => {
                         />
 
                         {/* change this on click to clear */}
-                        <button className="text-white" >
+                        <button className="text-white text-3xl" >
+                            <MdGroups onClick={openModal} />
 
-                            <FaFilter onClick={() => {
-                                {
-                                    setKeyword("")
-
-                                }
-
-                            }
-                            } />
                         </button>
                     </div>
                     <div className="chat-section w-full ">
@@ -344,7 +353,7 @@ const HomePage = () => {
 
                     </div>
 
-                    <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-10'>
+                    <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-0'>
 
                         {selectedChatId ? (
                             chatDetails && chatDetails.length > 0 ? (
@@ -431,7 +440,7 @@ const HomePage = () => {
 
 
                 </div>
-
+                <ModalComponent isOpen={isModalOpen} closeModal={closeModal} />
 
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>

@@ -103,7 +103,52 @@ export const sendMessage = async (token, chatId, messageContent) => {
     }
 };
 
+export const getUserInfoById = async (token, userId) => {
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/user/find/${userId}`, {
+            headers: {
+                JWT: token,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching search results:', error.message);
+        throw error;
+    }
+};
 
 
 
+export const createGroup = async (token, chatName, participants) => {
 
+    try {
+        const response = await fetch('http://localhost:8080/api/chat/createGroup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                JWT: token,
+            },
+            body: JSON.stringify({
+                participants: participants,
+                chatName: chatName,
+            }),
+        });
+
+        if (!response.ok) {
+            console.error('Network response was not ok');
+            throw new Error('Network response was not ok');
+        }
+
+        return true
+    } catch (error) {
+        console.error('Error creating group:', error.message);
+        return false;
+    }
+
+}
