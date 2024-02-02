@@ -9,16 +9,23 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-        origin: "http://localhost:5173",  // Your React application's URL
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"],
         credentials: true
-    }
+    },
+    pingInterval: 120000,
 });
+
+
+
 const corsOptions = {
-    origin: 'http://localhost:5173', // Update this with your React application's URL
+    origin: 'http://localhost:5173',
     methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
     credentials: true
 };
+
+
+
 app.use(cors(corsOptions));
 
 const startServer = async () => {
@@ -49,7 +56,7 @@ const startServer = async () => {
 
             console.log(`User connected with socket ID: ${socket.id}`);
 
-            // Handle events (e.g., sending/receiving messages)
+            // Handle events
             socket.on('message', (data) => {
                 console.log('Received message:', data.chatId);
                 io.emit('message', data);

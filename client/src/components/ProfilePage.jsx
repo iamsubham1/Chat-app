@@ -108,8 +108,9 @@ const ProfilePage = () => {
                 </button>
                 <div id="algn">
                     <div id="card">
-                        <div id="upper-bg">
-                            <img src={activeUserDetails ? activeUserDetails.profilePic : defaultUserImage} alt="profile-pic" className="profile-pic" />
+                        <div id="upper-bg" className='bg-red-600'>
+                            <img src={activeUserDetails && activeUserDetails.profilePic ? activeUserDetails.profilePic : defaultUserImage}
+                                alt="" className="profile-pic" />
                         </div>
                         <div id="lower-bg">
                             <div className="text">

@@ -261,13 +261,16 @@ const HomePage = () => {
     };
 
     return (
-        <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6">
+        <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6 overflow-x-hidden">
+
             <header className="w-screen h-[8vh] bg-[#121218] flex justify-between items-center text-[white]">
                 <h1 className='ml-5 customText text-2xl font-bold font-sans'>.CONNECT</h1>
                 <TbLogout onClick={() => logout('JWT')} className='text-2xl mr-5 cursor-pointer hover:text-[red]' />
             </header>
-            <div className="main-section h-[80vh] w-[95vw] flex">
-                <div className="left w-[30%] bg-[#121218] " >
+
+
+            <div className="main-section h-[80vh] w-[95vw] flex ">
+                <div className="left w-[30%] bg-[#121218] overflow-y-scroll custom-scrollbar " >
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
                             <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
@@ -281,7 +284,7 @@ const HomePage = () => {
                     </div>
                     <div className="search-bar px-3 py-4 flex space-x-10 items-center text-white">
                         <input
-                            className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black"
+                            className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black "
                             type="input"
                             placeholder="Search or start new chat"
                             onChange={(e) => {
@@ -328,15 +331,17 @@ const HomePage = () => {
                         ))}
                     </div>
                 </div>
+
+
                 <div className="right w-[70%] text-white p-4 overflow-y-auto relative grid">
                     <div className="top-10 left-0 z-10 flex items-center mb-4 max-h-[50px]">
                         {selectedChatInfo && (
-                            <img className="w-10 h-10 rounded-full mr-5" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
+                            <img className="w-10 h-10 rounded-full mr-5 caret-transparent" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
                         )}
                         <h6 className='z-10 text-[#a882d1] text-xl capitalize font-semibold' >
                             {selectedChatInfo ? ` ${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
                         </h6>
-                        {/*add here else*/}
+
                     </div>
 
                     <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-10'>
@@ -429,7 +434,7 @@ const HomePage = () => {
 
 
             </div>
-            <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full '>© Subham Das</footer>
+            <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>
         </div>
     );
 };

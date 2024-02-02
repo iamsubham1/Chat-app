@@ -101,7 +101,7 @@ background: linear-gradient(180deg, rgb(60, 28, 100) 0%, rgb(3, 0, 7) 100%);
   background: linear-gradient(90deg, rgba(125,74,180,1) 0%, rgb(255, 146, 43) 51%, rgba(125,74,180,1) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
+  caret-color: transparent;
 }
 .customBorder{
  
@@ -230,10 +230,9 @@ border: 2px solid rgba(255, 255, 255, 0);
   align-items: center;
   
 }
-.zIndex{
-  z-index: 100;
-}
+
 #card{
+  
   width: 370px;
   height: 435px;
   border: none;
@@ -254,12 +253,19 @@ border: 2px solid rgba(255, 255, 255, 0);
 
 .profile-pic{
   width: 35%;
-  background-color: white;
+
+  background: #a46ebd; 
+
+
+
+
+
   border: 3px solid #00000000;
   border-radius: 50%;
-  padding: 3px;
+  padding:3px;
   position: absolute;
   top: 40px;
+  caret-color: transparent;
 }
 
 #lower-bg{
