@@ -338,12 +338,8 @@ color:#E7E9EB;
   width: 50vw;
   height: 50vh;
   display: grid;
-
   place-items: center;
 }
-
-
-
 
 .flexprop{
   display: flex;
@@ -353,4 +349,14 @@ color:#E7E9EB;
 
 .modalBg{
   backdrop-filter: blur(5px)
+}
+
+.font{
+  font-family: poppins;
+}
+
+
+
+.prop{
+  display: flex;align-items: center;
 }

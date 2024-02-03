@@ -11,10 +11,7 @@ import {
 import defaultUserImage from '../assets/user.png';
 
 const ModalComponent = ({ isOpen, closeModal }) => {
-
-
     const token = getCookie('JWT');
-
     const [keyword, setKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [selectedUserIds, setSelectedUserIds] = useState([]);
@@ -29,12 +26,10 @@ const ModalComponent = ({ isOpen, closeModal }) => {
         setGroupName(e.target.value);
     };
 
-
     const performSearch = async () => {
         try {
             const data = await searchUsers(token, keyword);
             setSearchResults(data);
-            // console.log('Searched User Info:', data);
         } catch (error) {
             console.error('Error fetching search results:', error.message);
         }
@@ -48,12 +43,11 @@ const ModalComponent = ({ isOpen, closeModal }) => {
                 alert('Group created');
                 setGroupName('');
                 setSelectedUserIds([]);
+                setSelectedUserDetails([]);
                 closeModal();
+                window.location.reload()
             } else {
                 alert('No participants or name added');
-
-
-
             }
 
         } catch (error) {
@@ -66,43 +60,30 @@ const ModalComponent = ({ isOpen, closeModal }) => {
         performSearch();
     }, [keyword]);
 
-    // Function to add a user to the selectedUsers array
-    const toggleUserSelection = async (userId) => {
+    const userSelection = async (userId) => {
         try {
-            // Check if the user is already selected
-            if (selectedUserIds.includes(userId)) {
-                // User is already selected, no need to fetch details or update state
-                return;
-            }
-
-            // Fetch user details using API
             const userDetails = await getUserInfoById(token, userId);
 
             setSelectedUserIds((prevIds) => {
-                // Check if the user is not already selected, then add to the list
                 if (!prevIds.includes(userId)) {
                     const updatedIds = [...prevIds, userId];
-
-                    // Check if userDetails already exists in selectedUserDetails
-                    const userDetailsExist = selectedUserDetails.some(
-                        (userDetail) => userDetail._id === userDetails._id
-                    );
-
-                    // If userDetails does not exist, append to selectedUserDetails
-                    if (!userDetailsExist) {
-                        setSelectedUserDetails((prevDetails) => [...prevDetails, userDetails]);
-                        console.log("selectedUserDetails", selectedUserDetails)
-
-                    }
-
-                    console.log('Selected User IDs:', updatedIds);
                     return updatedIds;
                 }
-
                 return prevIds;
-
             });
-            console.log('Selected User details:', selectedUserDetails);
+
+            setSelectedUserDetails((prevDetails) => {
+                const userDetailsExist = prevDetails.some(
+                    (userDetail) => userDetail._id === userDetails._id
+                );
+
+                if (!userDetailsExist) {
+                    const updatedDetails = [...prevDetails, userDetails];
+                    return updatedDetails;
+                }
+
+                return prevDetails;
+            });
 
             setKeyword('');
         } catch (error) {
@@ -110,95 +91,96 @@ const ModalComponent = ({ isOpen, closeModal }) => {
         }
     };
 
+    const removeSelectedUser = (userId) => {
+        setSelectedUserIds((prevIds) => prevIds.filter((id) => id !== userId));
+        setSelectedUserDetails((prevDetails) => prevDetails.filter((user) => user._id !== userId));
+    };
+
     return (
         <Modal
             isOpen={isOpen}
             onRequestClose={closeModal}
-
-            className=' w-full h-full flex-col highest grid place-content-center bg bg-[#0000007a] modalBg'
+            className='w-full h-full flex-col highest grid place-content-center bg bg-[#0f061ab6] modalBg font'
         >
-
-            <div className='wrapper w-[40vw] '>
-                <div className='flex-col p-6 bg-black items-center w-[60%] h-[100%]'>
+            <div className='wrapper w-[40vw] content-between min-h-[60vh] '>
+                <div className='flex-col p-4 bg-black items-center w-[60%] h-[100%]'>
                     <h2 className="text-white text-2xl font-bold mb-4 text-center">Create group</h2>
 
-                    <button
-                        className=" text-white rounded-md relative bottom-[6vh] left-[25vw] "
-                        onClick={() => {
-                            closeModal(),
-                                setSelectedUserDetails([]);
-                            selectedUserIds([])
 
-                        }}
-                    >
-                        <IoClose className="text-[#c7c7c7] text-2xl hover:text-[#9678FF]" />
-                    </button>
-                    <div className="mb-2">
-                        <input
-                            type="text"
-                            placeholder="Group Name"
-                            className="border-none outline-none bg-[white] rounded-md w-full py-2 px-3 text-black"
-                            value={groupName}
-                            onChange={handleGroupNameChange}
-                        />
+                    <div className='bg  redDiv'>
+                        <div className="mb-2">
+                            <input
+                                type="text"
+                                placeholder="Group Name"
+                                className="rounded-md border-2 bg-transparent text-white focus:bg-transparent w-full py-2 px-3 font-bold"
+                                value={groupName}
+                                onChange={handleGroupNameChange}
+                            />
+                        </div>
+
+                        <div className="search-bar py-4 space-x-4 items-center text-white w-[100%] flex justify-stretch">
+                            <input
+                                className="w-[90%] py-2 px-3 rounded-md border-2 bg-transparent text-white focus:bg-transparent"
+                                type="input"
+                                placeholder="Search user"
+                                onChange={handleSearchInputChange}
+                                value={keyword}
+                            />
+                            <button
+                                className="bg-[#8b6bff] text-white py-2 px-4 rounded-md hover:bg-[#ffffff] hover:text-black"
+                                onClick={handleCreateGroup}
+                            >
+                                Create
+                            </button>
+                        </div>
+
+                        <div className="search-results mt-6 w-full">
+                            {searchResults.map((user) => (
+                                <div key={user._id} className="user-card rounded-md flex m-1 py-2 px-3 gap-3 bg-[#48484856] prop cursor-pointer text-white items-start hover:text-black hover:bg-[#9678FF]" onClick={() => userSelection(user._id)}>
+                                    <img
+                                        src={user && user.profilePic ? user.profilePic : defaultUserImage}
+                                        alt={user.name}
+                                        className="w-12 h-12 object-contain rounded-full border-2"
+                                    />
+                                    <p className="font-semibold capitalize">{user.name}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="selected-users mt-6 flex space-x-3 ">
+                            {selectedUserDetails.map((user) => (
+                                <div key={user._id} className="text-white flex-col flexprop">
+                                    <img
+                                        src={user.profilePic || defaultUserImage}
+                                        alt={user.name}
+                                        className="w-10 h-10 object-contain mb-2 rounded-full border-2"
+                                    />
+                                    <button onClick={() => removeSelectedUser(user._id)}>
+                                        <IoClose className="text-[#ff6262] text-2xl hover:text-[red]" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="search-bar  py-4 space-x-4 items-center text-white  w-[100%] flex justify-stretch">
-                        <input
-                            className="border-none outline-none bg-[white] rounded-md w-[90%] py-2 px-3 text-black"
-                            type="input"
-                            placeholder="Search or start new chat"
-                            onChange={handleSearchInputChange}
-                            value={keyword}
-                        />
+
+
+                    <div className=' grid'>
                         <button
-                            className="bg-blue-500 text-white py-2 px-4 rounded-md"
-                            onClick={handleCreateGroup}
-                        >Create
+                            className="text-white rounded-md bg-[#ac2d2d] px-4 py-2 place-self-center hover:bg-[rgb(255,0,0)]"
+                            onClick={() => {
+                                closeModal();
+                                setSelectedUserDetails([]);
+                                setSelectedUserIds([]);
+                            }}
+                        >
+                            Close
                         </button>
-                    </div>
-
-                    {/* Display search results as cards */}
-
-                    <div className="search-results mt-6 grid gap-4 grid-cols-2 lg:grid-cols-3 w-[100%]">
-                        {searchResults.map((user) => (
-                            <div key={user._id} className="user-card border border-gray-300 px-8 gap-5 rounded-md flex " >
-                                <img
-                                    src={user && user.profilePic ? user.profilePic : defaultUserImage}
-                                    alt={user.name}
-                                    className="w-12 h-12 object-contain mb-2 rounded-full"
-                                />
-                                <p className="text-black font-semibold">{user.name}</p>
-                                <button
-                                    className='bg-green-500 text-white py-2 px-4 rounded-md '
-                                    onClick={() => toggleUserSelection(user._id)}
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        ))}
 
                     </div>
-
-                    {/* Display selected users */}
-                    <div className="selected-users mt-6 flex space-x-4">
-                        {selectedUserDetails.map((user) => (
-                            <div key={user.userId} className="text-white flex flex-col items-center">
-                                <img
-                                    src={user.profilePic || defaultUserImage}
-                                    alt={user.name}
-                                    className="w-10 h-10 object-contain mb-2 rounded-full"
-                                />
-                                <p className="text-xs">{user.name}</p>
-                            </div>
-                        ))}
-                    </div>
-
 
                 </div>
-
             </div>
-
         </Modal>
     );
 };
