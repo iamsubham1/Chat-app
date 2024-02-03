@@ -81,7 +81,7 @@ const getAllChats = async (req, res) => {
     }
 };
 
-//create a group (tested fixed and works)
+//create a group (tested fixed and works) (used in client)
 const createGroup = async (req, res) => {
     let { participants, chatName, groupPic } = req.body;
     const reqUser = await req.user;

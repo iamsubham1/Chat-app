@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BiCommentDetail } from 'react-icons/bi';
 import { TbCircleDashed } from 'react-icons/tb';
 import { IoMdMore } from 'react-icons/io';
-import { FaFilter } from 'react-icons/fa6';
 import ChatCard from './ChatCard';
+import { IoFilter } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { getCookie } from '@/utility/getcookie';
 import { logout } from '@/utility/logout';
@@ -12,6 +12,8 @@ import { TbLogout } from "react-icons/tb";
 import io from 'socket.io-client';
 import defaultUserImage from '../assets/user.png';
 import { MdGroups } from "react-icons/md";
+import { IoClose } from "react-icons/io5";
+
 import Modal from 'react-modal';
 import ModalComponent from '../components/Modal'; // Import your modal component
 
@@ -49,7 +51,11 @@ const HomePage = () => {
     const [messageContent, setMessageContent] = useState('');
     const [istyping, setIsTyping] = useState(false);
     const [showTyping, setShowTyping] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
 
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    };
 
     const handleChatSelect = async (chatId, searchUser) => {
         // If it's a searched user, create a new chat if not already existing
@@ -284,6 +290,7 @@ const HomePage = () => {
 
 
             <div className="main-section h-[80vh] w-[95vw] flex ">
+
                 <div className="left w-[30%] bg-[#121218] overflow-y-scroll custom-scrollbar " >
 
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
@@ -315,11 +322,13 @@ const HomePage = () => {
                         />
 
                         {/* change this on click to clear */}
-                        <button className="text-white text-3xl" >
-                            <MdGroups onClick={openModal} />
+                        <div className='flex p-2 gap-5'>
+                            <button className="text-2xl  hover:text-[#9678FF] " ><IoFilter /></button>
+                            <button className="text-3xl hover:text-[#9678FF] " ><MdGroups onClick={openModal} /></button>
+                        </div>
 
-                        </button>
                     </div>
+
                     <div className="chat-section w-full ">
                         {((searchResults.length === 0 && allChats.length === 0) ? (
                             <div className="no-chats-message text-white text-center mt-4">
@@ -342,14 +351,48 @@ const HomePage = () => {
                 </div>
 
 
-                <div className="right w-[70%] text-white p-4 overflow-y-auto relative grid">
-                    <div className="top-10 left-0 z-10 flex items-center mb-4 max-h-[50px]">
+                <div className="right w-[70%] text-white p-4 overflow-y-auto relative grid ">
+
+                    <div className="top-10 left-0  z-0 flex items-center mb-4 max-h-[50px]">
                         {selectedChatInfo && (
                             <img className="w-10 h-10 rounded-full mr-5 caret-transparent" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
                         )}
-                        <h6 className='z-10 text-[#a882d1] text-xl capitalize font-semibold' >
+                        <h6 className='z-5 text-[#a882d1] text-xl capitalize font-semibold' >
                             {selectedChatInfo ? ` ${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
                         </h6>
+
+
+                        {selectedChatInfo && (
+                            <button className="ml-auto mr-2 z-0" onClick={toggleDropdown}>
+                                {!showDropdown ? (
+                                    <IoMdMore className="text-[#c7c7c7] text-2xl hover:text-[#9678FF]" />
+                                ) : (
+                                    <IoClose className="text-[#c7c7c7] text-2xl hover:text-[#9678FF]" />
+                                )}
+                            </button>
+                        )}
+
+
+                        {showDropdown && (
+                            <div className="absolute top-14 right-11 mt-1 bg-white border border-gray-300 round shadow-md w-[5vw] self-center">
+
+
+                                {/* Dropdown items */}
+
+                                {selectedChatInfo && showDropdown ? (<div className="py-1">
+                                    <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center">
+                                        Profile
+                                    </button>
+                                </div>) : ""}
+                                <div className="py-1">
+                                    <button className="w-full text-center focus:outline-none text-black hover:bg-[#9678FF]">
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+
 
                     </div>
 
@@ -440,7 +483,8 @@ const HomePage = () => {
 
 
                 </div>
-                <ModalComponent isOpen={isModalOpen} closeModal={closeModal} />
+
+                <ModalComponent isOpen={isModalOpen} closeModal={closeModal} className='' />
 
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>
