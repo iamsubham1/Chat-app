@@ -1,11 +1,13 @@
 const express = require('express')
 const router = express.Router()
-const { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants } = require('../controllers/chatController');
+const { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants, deleteChat } = require('../controllers/chatController');
 
 const verifyUser = require('../middleware/verifyUser')
 
 //start a chat 
 router.post('/create', verifyUser, createChat);
+
+router.delete('/deleteChat/:id', verifyUser, deleteChat)
 
 //get all chats
 router.get('/allchats', verifyUser, getAllChats);

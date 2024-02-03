@@ -39,6 +39,9 @@ const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const token = getCookie('JWT');
+
+
+
     const navigate = useNavigate();
 
     const [keyword, setKeyword] = useState('');
@@ -221,11 +224,11 @@ const HomePage = () => {
         socket.connect();
 
         socket.on('connect', () => {
-            // console.log('Connected to Socket.IO server');
+            console.log('Connected to Socket.IO server');
         });
 
         socket.on('disconnect', (reason) => {
-            // console.log('Disconnected from Socket.IO server. Reason:', reason);
+            console.log('Disconnected from Socket.IO server. Reason:', reason);
         });
 
         socket.on('error', (error) => {
@@ -280,6 +283,32 @@ const HomePage = () => {
         }
     };
 
+
+
+    const deleteChat = async (chatId) => {
+        console.log('btn clicked')
+        try {
+            const response = await fetch(`http://localhost:8080/api/chat/deleteChat/${chatId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    JWT: token,
+                }
+
+            });
+
+            if (response.ok) {
+                alert('chat deleted successfully')
+                window.location.reload();
+            } else {
+                alert('cant delete chat')
+            }
+
+
+        } catch (error) {
+            console.error('Error fetching chat details:', error.message);
+        }
+    }
     return (
         <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6 overflow-x-hidden">
 
@@ -379,16 +408,15 @@ const HomePage = () => {
 
                                 {/* Dropdown items */}
 
-                                {selectedChatInfo && showDropdown ? (<div className="py-1">
-                                    <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center">
+                                {selectedChatInfo && showDropdown ? (<div className="py-2 gap-2">
+                                    <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center mb-2">
                                         Profile
                                     </button>
-                                </div>) : ""}
-                                <div className="py-1">
-                                    <button className="w-full text-center focus:outline-none text-black hover:bg-[#9678FF]">
-                                        Logout
+                                    <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center" onClick={() => deleteChat(selectedChatInfo._id)}>
+                                        Delete
                                     </button>
-                                </div>
+                                </div>) : ""}
+
                             </div>
                         )}
 

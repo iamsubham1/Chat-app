@@ -60,6 +60,28 @@ const createChat = async (req, res) => {
     }
 };
 
+
+
+const deleteChat = async (req, res) => {
+    try {
+        const reqUser = await req.user;
+
+        console.log("User:", reqUser); // Log the user information
+
+        console.log("Chat ID to delete:", req.params.id);
+        const chatDelete = await Chat.findByIdAndDelete(req.params.id);
+
+        console.log("Deleted Chat:", chatDelete); // Log the deleted chat information
+
+        res.status(200).send('Chat deleted successfully');
+    } catch (error) {
+        console.error("Error deleting chat:", error); // Log the error for debugging
+        res.status(400).send('Failed to delete chat');
+    }
+}
+
+
+
 //get all chats(tested and works) (used in client)
 const getAllChats = async (req, res) => {
     try {
@@ -172,4 +194,4 @@ const removeParticipants = async (req, res) => {
 
 
 
-module.exports = { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants };
+module.exports = { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants, deleteChat };

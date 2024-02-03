@@ -3,10 +3,14 @@ const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const connectToMongo = require('./db');
-const port = 8080;
+require('dotenv').config()
+
+const port = process.env.PORT || 6060;
 
 const app = express();
 const server = http.createServer(app);
+
+
 const io = socketIO(server, {
     cors: {
         origin: "http://localhost:5173",
@@ -18,8 +22,10 @@ const io = socketIO(server, {
 
 
 
+
+
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: process.env.origin,
     methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
     credentials: true
 };
