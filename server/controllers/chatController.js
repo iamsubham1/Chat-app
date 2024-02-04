@@ -60,27 +60,23 @@ const createChat = async (req, res) => {
     }
 };
 
-
-
 const deleteChat = async (req, res) => {
     try {
         const reqUser = await req.user;
 
-        console.log("User:", reqUser); // Log the user information
+        console.log("User:", reqUser);
 
         console.log("Chat ID to delete:", req.params.id);
         const chatDelete = await Chat.findByIdAndDelete(req.params.id);
 
-        console.log("Deleted Chat:", chatDelete); // Log the deleted chat information
+        console.log("Deleted Chat:", chatDelete);
 
         res.status(200).send('Chat deleted successfully');
     } catch (error) {
-        console.error("Error deleting chat:", error); // Log the error for debugging
+        console.error("Error deleting chat:", error);
         res.status(400).send('Failed to delete chat');
     }
 }
-
-
 
 //get all chats(tested and works) (used in client)
 const getAllChats = async (req, res) => {
@@ -192,6 +188,24 @@ const removeParticipants = async (req, res) => {
     }
 }
 
+//get Chat info
+const chatinfo = async (req, res) => {
+    const chatId = req.params.id;
+    try {
+        const info = await Chat.findById(chatId);
+
+        if (!info) {
+            console.log("Chat not found with ID:", chatId);
+            return res.status(404).send({ error: "Chat doesn't exist", chatId });
+        }
+
+        res.status(200).send(info)
 
 
-module.exports = { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants, deleteChat };
+    } catch (error) {
+        res.status(400).send(error)
+
+    }
+}
+
+module.exports = { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants, deleteChat, chatinfo };

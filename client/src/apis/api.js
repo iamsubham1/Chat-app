@@ -58,7 +58,7 @@ export const getUserInfo = async (token) => {
     }
 };
 
-export const getChatDetails = async (token, chatId) => {
+export const getMessages = async (token, chatId) => {
     try {
         const response = await fetch(`${API_BASE_URL}/api/message/getMessages/${chatId}`, {
             headers: {
@@ -123,8 +123,6 @@ export const getUserInfoById = async (token, userId) => {
     }
 };
 
-
-
 export const createGroup = async (token, chatName, participants) => {
 
     try {
@@ -151,4 +149,23 @@ export const createGroup = async (token, chatName, participants) => {
         return false;
     }
 
+}
+
+export const chatInfo = async (token, chatId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/chat/chatInfo/${chatId}`, {
+            headers: {
+                JWT: token,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching chat details:', error.message);
+        throw error;
+    }
 }

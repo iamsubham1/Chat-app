@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants, deleteChat } = require('../controllers/chatController');
+const { createChat, getAllChats, createGroup, renameGroup, addParticipants, removeParticipants, deleteChat, chatinfo } = require('../controllers/chatController');
 
 const verifyUser = require('../middleware/verifyUser')
 
@@ -12,6 +12,8 @@ router.delete('/deleteChat/:id', verifyUser, deleteChat)
 //get all chats
 router.get('/allchats', verifyUser, getAllChats);
 
+//get chat info by id 
+router.get('/chatInfo/:id', verifyUser, chatinfo);
 //create a group
 router.post('/createGroup', verifyUser, createGroup);
 

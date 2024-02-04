@@ -14,17 +14,16 @@ import defaultUserImage from '../assets/user.png';
 import { MdGroups } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 
-import Modal from 'react-modal';
-import ModalComponent from '../components/Modal'; // Import your modal component
 
+import ModalComponent from '../components/Modal'; // Import your modal component
+import ChatModalComponent from '../components/ChatModal';
 
 
 import {
     getAllChats,
     searchUsers,
     getUserInfo,
-    getChatDetails,
-
+    getMessages,
     sendMessage
 } from '../apis/api';
 import TypingCard from './TypingCard';
@@ -36,7 +35,6 @@ const socket = io('http://localhost:8080', {
 
 
 const HomePage = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const token = getCookie('JWT');
 
@@ -55,6 +53,8 @@ const HomePage = () => {
     const [istyping, setIsTyping] = useState(false);
     const [showTyping, setShowTyping] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -169,7 +169,7 @@ const HomePage = () => {
 
     const fetchChatDetails = async (chatId) => {
         try {
-            const data = await getChatDetails(token, chatId);
+            const data = await getMessages(token, chatId);
             setChatDetails(data);
         } catch (error) {
             console.error('Error fetching chat details:', error.message);
@@ -266,6 +266,15 @@ const HomePage = () => {
 
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+    const openChatModal = () => {
+        console.log("clicked")
+        setIsChatModalOpen(true);
+        console.log(isChatModalOpen)
+    };
+
+    const closeChatModal = () => {
+        setIsChatModalOpen(false);
     };
 
     useEffect(() => {
@@ -382,11 +391,14 @@ const HomePage = () => {
 
                 <div className="right w-[70%] text-white p-4 overflow-y-auto relative grid ">
 
-                    <div className="top-10 left-0  z-0 flex items-center mb-4 max-h-[50px]">
+                    <div className="top-10 left-0  z-1 flex items-center mb-4 max-h-[50px]">
+
                         {selectedChatInfo && (
-                            <img className="w-10 h-10 rounded-full mr-5 caret-transparent" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
+                            <img className="w-10 h-10 rounded-full mr-5 caret-transparent z-0" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
                         )}
-                        <h6 className='z-5 text-[#a882d1] text-xl capitalize font-semibold' >
+                        <h6 className='z-5 text-[#a882d1] text-xl capitalize font-semibold z-0 cursor-pointer hover:text-white'
+                            onClick={openChatModal} >
+
                             {selectedChatInfo ? ` ${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
                         </h6>
 
@@ -403,12 +415,12 @@ const HomePage = () => {
 
 
                         {showDropdown && (
-                            <div className="absolute top-14 right-11 mt-1 bg-white border border-gray-300 round shadow-md w-[5vw] self-center">
+                            <div className="absolute top-14 right-11 mt-1 bg-white border border-gray-300 round shadow-md w-[5vw] self-center highest">
 
 
                                 {/* Dropdown items */}
 
-                                {selectedChatInfo && showDropdown ? (<div className="py-2 gap-2">
+                                {selectedChatInfo && showDropdown ? (<div className="py-2 gap-2 highest">
                                     <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center mb-2">
                                         Profile
                                     </button>
@@ -513,6 +525,7 @@ const HomePage = () => {
                 </div>
 
                 <ModalComponent isOpen={isModalOpen} closeModal={closeModal} className='' />
+                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} className='' />
 
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>
