@@ -9,7 +9,7 @@ const verifyUser = (req, res, next) => {
         const userData = jwt.verify(token, process.env.signature);
 
         // Convert user _id to ObjectId
-        console.log(userData.user._id)
+        // console.log(userData.user._id)
         userData.user._id = new ObjectId(userData.user._id);
 
         req.user = userData;

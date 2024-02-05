@@ -12,7 +12,7 @@ const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
     }
     const handleClick = () => {
 
-        //chat>-id and searched user info to get the chat further down the line..
+        //chat id and searched user info to get the chat further down the line..
         onSelectChat(_id, searchUser);
     };
 
