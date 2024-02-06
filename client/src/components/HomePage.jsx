@@ -15,8 +15,8 @@ import { MdGroups } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 
 
-import ModalComponent from '../components/Modal'; // Import your modal component
-import ChatModalComponent from '../components/ChatModal';
+import ModalComponent from './GroupModal';
+import ChatModalComponent from './ChatModal';
 
 
 import {

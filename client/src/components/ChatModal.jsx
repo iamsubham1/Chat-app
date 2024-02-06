@@ -3,12 +3,15 @@ import Modal from 'react-modal';
 import { getUserInfoById, chatInfo } from '../apis/api';
 
 const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token }) => {
+
     const [chatData, setChatData] = useState('');
     const [receiverData, setReceiverData] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
 
     let receiverId;
     let displayName;
+
+
 
     //get chat details
     const fetchChatDetails = async () => {
@@ -22,17 +25,17 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
         }
     };
 
-    const activeUserId = user._id;
-    const participants = chatData.participants || [];
 
+    const participants = chatData.participants || [];
+    console.log("participants :", participants)
     //set the id to further fetch info
     if (chatData.isGroupChat) {
         receiverId = null;
         displayName = chatData.chatName || null;
     } else {
         // For one-on-one chat, find the participant other than the active user.
-        receiverId = participants.find(participant => participant._id !== activeUserId) || null;
-        console.log(receiverId, activeUserId)
+        receiverId = participants.find(participant => participant !== user._id);
+        console.log("receiverId", receiverId, "active user", user._id)
     }
 
     console.log(receiverId);
@@ -44,6 +47,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
                 const userData = await getUserInfoById(token, receiverId);
                 console.log('Receiver details:', userData);
                 setReceiverData(userData);
+                displayName = receiverData.name
             }
         } catch (error) {
             console.error('Error fetching user details:', error.message);
@@ -74,12 +78,15 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
             // For one-on-one chat, fetch details for the receiver
             receiverDetails();
         }
-    }, [isOpen, receiverId, groupMembers]);
+    }, [isOpen, receiverId,]);
 
     return (
         <Modal
             isOpen={isOpen}
-            onRequestClose={closeModal}
+            onRequestClose={() => {
+
+                closeModal();
+            }}
             className='modal-content w-full h-full flex-col highest grid place-content-center bg bg-[#0f061ab6] modalBg font'
         >
             <h2>Chat Modal</h2>
@@ -95,7 +102,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
                         <p>{member.name}</p>
                         <img src={member.profilePic} className='w-12 h-12 '></img>
                     </div>
-                )) : "dsad"}
+                )) : ""}
             </div>
         </Modal>
     );

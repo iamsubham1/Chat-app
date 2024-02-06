@@ -47,7 +47,7 @@ const ModalComponent = ({ isOpen, closeModal }) => {
                 closeModal();
                 window.location.reload()
             } else {
-                alert('No participants or name added');
+                alert('Group name and participants field cant be blank');
             }
 
         } catch (error) {
