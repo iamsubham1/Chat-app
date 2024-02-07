@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { getUserInfoById, chatInfo } from '../apis/api';
+import defaultUserImage from '../assets/user.png';
 
 const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token }) => {
 
@@ -10,8 +11,6 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
 
     let receiverId;
     let displayName;
-
-
 
     //get chat details
     const fetchChatDetails = async () => {
@@ -92,9 +91,9 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
             <h2>Chat Modal</h2>
             <button onClick={closeModal} className='bg bg-red-600 absolute right-10 top-10'>Close</button>
             <p>selected chatid: {selectedChatId}</p>
-            <p>displayName: {displayName || receiverData.name}</p>
-            <img src={chatData.groupPic || receiverData.profilePic} className='w-12 h-12'></img>
-            <p> {chatData.isGroupChat ? "" : receiverData.about}</p>
+            <p>displayName: </p>
+            <img src={""} className='w-12 h-12' />
+
             <p></p>
             <div className='groupMembers'>
                 {chatData.isGroupChat ? groupMembers.map(member => (
@@ -103,6 +102,30 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token })
                         <img src={member.profilePic} className='w-12 h-12 '></img>
                     </div>
                 )) : ""}
+            </div>
+            <div id="algn">
+                <div id="card">
+                    <div id="upper-bg" className='bg-red-600'>
+                        <img src={chatData.groupPic || receiverData.profilePic}
+                            alt="" className="profile-pic" />
+                    </div>
+                    <div id="lower-bg">
+                        <div className="text">
+                            <p className="name capitalize"> {displayName || receiverData.name}</p>
+                            <p className="PhoneNumber"></p>
+                            <p> {chatData.isGroupChat ? "" : receiverData.about}</p>
+                        </div>
+                        <div id="icons">
+                            <h2>{""}</h2>
+                        </div>
+                        <div id="btn">
+                            <button className="msg text-black" onClick={""}>Edit</button>
+
+                        </div>
+
+
+                    </div>
+                </div>
             </div>
         </Modal>
     );

@@ -3,6 +3,7 @@ const { Schema } = mongoose
 
 
 const chatSchema = new mongoose.Schema({
+
     chatName: {
         type: String
     },
