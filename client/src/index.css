@@ -253,7 +253,8 @@ border: 2px solid rgba(255, 255, 255, 0);
 }
 
 .profile-pic{
-  width: 35%;
+  width:10vw;
+  height: 21vh;
   background: #a46ebd; 
   border: 3px solid #00000000;
   border-radius: 50%;
@@ -358,5 +359,6 @@ color:#E7E9EB;
 
 
 .prop{
-  display: flex;align-items: center;
+  display: flex;
+  align-items: center;
 }
