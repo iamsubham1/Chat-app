@@ -137,7 +137,7 @@ const ProfilePage = () => {
             <Modal
                 isOpen={isEditing}
                 onRequestClose={closeEditModal}
-                className="modal "
+                className="modal"
                 overlayClassName="overlay"
             >
                 <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>

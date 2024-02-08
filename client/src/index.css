@@ -78,7 +78,7 @@
 
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 12px; /* Adjust the width as needed */
+  width: 1px; /* Adjust the width as needed */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -193,7 +193,7 @@ div#wave .dot:nth-child(3) {
 }
 
 .overlay {
-  background-color: rgba(0, 0, 0, 0.418); /* Adjust the color and opacity as needed */
+  background-color: rgba(9, 1, 16, 0.288); /* Adjust the color and opacity as needed */
   backdrop-filter: blur(4px);
   position: absolute;
   top:0; /* Use fixed position for full-screen overlay */
@@ -348,4 +348,9 @@ color:#E7E9EB;
 .prop{
   display: flex;
   align-items: center;
+}
+
+
+.padding{
+  padding: 0;
 }

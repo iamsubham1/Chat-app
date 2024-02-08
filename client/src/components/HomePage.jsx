@@ -13,7 +13,7 @@ import io from 'socket.io-client';
 import defaultUserImage from '../assets/user.png';
 import { MdGroups } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
-import ModalComponent from './GroupModal';
+import GroupModalComponent from './GroupModal';
 import ChatModalComponent from './ChatModal';
 import {
     getAllChats,
@@ -169,12 +169,12 @@ const HomePage = () => {
             const data = await getMessages(token, chatId);
             setChatDetails(data);
             // Count unread messages
-            if (data && data.length > 0) {
-                const lastMessage = data[data.length - 1];
-                const unreadCount = lastMessage.readBy.filter(userId => userId !== userInfo._id).length;
-                console.log(unreadCount);
-                setUnreadMessages(unreadCount);
-            }
+            // if (data && data.length > 0) {
+            //     const lastMessage = data[data.length - 1];
+            //     const unreadCount = lastMessage.readBy.filter(userId => userId !== userInfo._id).length;
+            //     console.log(unreadCount);
+            //     setUnreadMessages(unreadCount);
+            // }
 
         } catch (error) {
             console.error('Error fetching chat details:', error.message);
@@ -283,6 +283,7 @@ const HomePage = () => {
     const closeModal = () => {
         setIsModalOpen(false);
     };
+
     const openChatModal = () => {
         // console.log("clicked")
         setIsChatModalOpen(true);
@@ -350,7 +351,7 @@ const HomePage = () => {
 
             <div className="main-section h-[80vh] w-[95vw] flex ">
 
-                <div className="left w-[30%] bg-[#121218] overflow-y-scroll custom-scrollbar " >
+                <div className="left w-[30%] bg-[#121218] custom-scrollbar " >
 
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
@@ -388,16 +389,15 @@ const HomePage = () => {
 
                     </div>
 
-                    <div className="chat-section w-full ">
+                    <div className="chat-section w-full h-[78%] overflow-y-scroll custom-scrollbar">
                         {((searchResults.length === 0 && allChats.length === 0) ? (
                             <div className="no-chats-message text-white text-center mt-4">
                                 No chats to show
                             </div>
                         ) : (
                             (searchResults.length === 0 ? sortedChats : searchResults).map((chat, index) => (
-                                <div key={chat._id}>
+                                <div key={chat._id} className=''>
                                     <hr className='border-[#8F5EF6]' />
-
                                     <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo}
                                         onSelectChat={handleChatSelect}  // Pass the callback function
 
@@ -550,8 +550,8 @@ const HomePage = () => {
 
                 </div>
 
-                <ModalComponent isOpen={isModalOpen} closeModal={closeModal} className='' />
-                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} receiverInfo={handleReceiverDataChange} className='' />
+                <GroupModalComponent isOpen={isModalOpen} closeModal={closeModal} />
+                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} receiverInfo={handleReceiverDataChange} />
 
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>

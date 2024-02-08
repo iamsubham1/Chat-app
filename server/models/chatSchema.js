@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose
-
-
 const chatSchema = new mongoose.Schema({
 
     chatName: {
-        type: String
+        type: String,
+        required: true
     },
+
     isGroupChat: {
         type: Boolean,
         required: true

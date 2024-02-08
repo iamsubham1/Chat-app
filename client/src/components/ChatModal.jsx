@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { getUserInfoById, chatInfo } from '../apis/api';
 import defaultUserImage from '../assets/user.png';
+import EditGroupModal from './EditGroupModal';
 
 const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, receiverInfo }) => {
 
     const [chatData, setChatData] = useState('');
     const [receiverData, setReceiverData] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     let individualReceiverId;
     let displayName;
 
@@ -27,15 +29,20 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
 
     const participants = chatData.participants || [];
     // console.log("participants :", participants)`
-    //set the id to further fetch info
+
+
+    //set the requirements to get member or individual receiver details
     if (chatData.isGroupChat) {
         individualReceiverId = null;
-
-
         displayName = chatData.chatName || null;
     } else {
         // For one-on-one chat find the participant other than the active user.
+
+
         individualReceiverId = participants.find(participant => participant !== user._id);
+
+
+
         // console.log("receiverId", receiverId, "active user", user._id)
     }
 
@@ -46,9 +53,9 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
             if (individualReceiverId) {
                 // console.log('Fetching receiver details... for', receiverId);
                 const userData = await getUserInfoById(token, individualReceiverId);
-                console.log('Receiver details:', userData);
+                // console.log('Receiver details:', userData);
                 setReceiverData(userData);
-                displayName = receiverData.name
+
             }
         } catch (error) {
             console.error('Error fetching user details:', error.message);
@@ -62,7 +69,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
                 const userData = await getUserInfoById(token, member);
                 return userData;
             }));
-            console.log('Group members details:', membersDetails);
+            // console.log('Group members details:', membersDetails);
             setGroupMembers(membersDetails);
         } catch (error) {
             console.error('Error fetching group members details:', error.message);
@@ -79,9 +86,17 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
     }, [chatData]);
 
     useEffect(() => {
+        if (selectedChatId) { fetchChatDetails(); }
 
-        fetchChatDetails();
     }, [isOpen]);
+
+    const openEditGroupModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsModalOpen(false);
+    };
 
     return (
         <Modal
@@ -90,7 +105,8 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
 
                 closeModal();
             }}
-            className='modal-content w-full h-full flex-col highest grid place-content-center bg bg-[#0f061ab6] modalBg font'
+            className='modal-content w-full h-full flex-col highest grid place-content-center  font'
+            overlayClassName="overlay"
         >
 
             <button onClick={() => {
@@ -128,7 +144,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
 
 
                         {chatData.groupAdmin === user._id ? <div id="btn">
-                            <button className="msg text-black" >Edit Group</button>
+                            <button className="msg text-black" onClick={openEditGroupModal}>Edit Group</button>
 
                         </div> : ""}
 
@@ -137,6 +153,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
                     </div>
                 </div>
             </div>
+            <EditGroupModal isOpen={isModalOpen} closeModal={closeEditModal} selectedChatId={selectedChatId} />
         </Modal>
     );
 };

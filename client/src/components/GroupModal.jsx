@@ -8,9 +8,10 @@ import {
     getUserInfoById,
     createGroup,
 } from '../apis/api';
+
 import defaultUserImage from '../assets/user.png';
 
-const ModalComponent = ({ isOpen, closeModal }) => {
+const GroupModalComponent = ({ isOpen, closeModal }) => {
     const token = getCookie('JWT');
     const [keyword, setKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -100,14 +101,15 @@ const ModalComponent = ({ isOpen, closeModal }) => {
         <Modal
             isOpen={isOpen}
             onRequestClose={closeModal}
-            className='w-full h-full flex-col highest grid place-content-center bg bg-[#0f061ab6] modalBg font'
+            className='w-full h-full flex-col highest grid place-content-center bg bg-[#00000000] modalBg font'
+            overlayClassName="overlay"
         >
             <div className='wrapper w-[40vw] content-between min-h-[60vh] '>
                 <div className='flex-col p-4 bg-black items-center w-[60%] h-[100%]'>
                     <h2 className="text-white text-2xl font-bold mb-4 text-center">Create group</h2>
 
 
-                    <div className='bg  redDiv'>
+                    <div className='bg'>
                         <div className="mb-2">
                             <input
                                 type="text"
@@ -185,4 +187,4 @@ const ModalComponent = ({ isOpen, closeModal }) => {
     );
 };
 
-export default ModalComponent;
+export default GroupModalComponent;
