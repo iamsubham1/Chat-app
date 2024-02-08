@@ -34,7 +34,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
 
         displayName = chatData.chatName || null;
     } else {
-        // For one-on-one chat, find the participant other than the active user.
+        // For one-on-one chat find the participant other than the active user.
         individualReceiverId = participants.find(participant => participant !== user._id);
         // console.log("receiverId", receiverId, "active user", user._id)
     }
@@ -70,20 +70,18 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
     };
 
     useEffect(() => {
-        if (isOpen) {
-            fetchChatDetails();
 
-
-            // Fetch group members details only if it's a group chat
-            if (chatData.isGroupChat) {
-                fetchGroupMembersDetails();
-            } else {
-                // For one-on-one chat, fetch details for the receiver
-                receiverDetails();
-            }
+        if (chatData.isGroupChat) {
+            fetchGroupMembersDetails();
+        } else {
+            receiverDetails();
         }
+    }, [chatData]);
 
-    }, [isOpen, chatData]);
+    useEffect(() => {
+
+        fetchChatDetails();
+    }, [isOpen]);
 
     return (
         <Modal

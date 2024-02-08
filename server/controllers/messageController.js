@@ -53,7 +53,8 @@ const getAllMessages = async (req, res) => {
 
         const messages = await Message.find({ chat: chatId })
             .populate("sender", "-password")
-            .populate("chat");
+            .populate("chat")
+            .populate("readBy")
 
 
         // Mark messages as read by updating the readBy array

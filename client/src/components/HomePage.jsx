@@ -51,6 +51,7 @@ const HomePage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+    const [unreadMessages, setUnreadMessages] = useState(0);
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -67,12 +68,12 @@ const HomePage = () => {
             if (createdChatId) {
                 console.log("Chat created with id:", createdChatId);
                 setSelectedChatId(createdChatId);
-                fetchChatDetails(createdChatId);
+                fetchMessages(createdChatId);
             }
         } else {
             // Handle the selection of an existing chat (e.g., fetch chat details)
             setSelectedChatId(chatId);
-            fetchChatDetails(chatId);
+            fetchMessages(chatId);
         }
     };
 
@@ -84,7 +85,7 @@ const HomePage = () => {
             if (success) {              //data
                 socket.emit('message', { content: messageContent, chatId: selectedChatId });
                 setMessageContent('');
-                fetchChatDetails(selectedChatId);
+                fetchMessages(selectedChatId);
             }
         } catch (error) {
             console.error('Error sending message:', error.message);
@@ -123,7 +124,7 @@ const HomePage = () => {
 
                 // Fetch chat details immediately after creating the chat
                 console.log("chatId or new chat is ", data._id)
-                fetchChatDetails(data._id);
+                fetchMessages(data._id);
 
                 return data._id; // Return the chat ID
             } else {
@@ -163,10 +164,18 @@ const HomePage = () => {
         }
     };
 
-    const fetchChatDetails = async (chatId) => {
+    const fetchMessages = async (chatId) => {
         try {
             const data = await getMessages(token, chatId);
             setChatDetails(data);
+            // Count unread messages
+            if (data && data.length > 0) {
+                const lastMessage = data[data.length - 1];
+                const unreadCount = lastMessage.readBy.filter(userId => userId !== userInfo._id).length;
+                console.log(unreadCount);
+                setUnreadMessages(unreadCount);
+            }
+
         } catch (error) {
             console.error('Error fetching chat details:', error.message);
         }
@@ -206,14 +215,25 @@ const HomePage = () => {
         };
     }, [istyping, selectedChatId])
 
-
-
+    // useEffect(() => {
+    //     // Ensure chatDetails is not null or undefined
+    //     if (chatDetails) {
+    //         console.log(allChats[0].latestMessage)
+    //         if (chatDetails.length > 0) {
+    //             const lastMessageReadBy = chatDetails[chatDetails.length - 1].readBy;
+    //             console.log("ReadBy array of the last message:", chatDetails);
+    //         } else {
+    //             console.log("ChatDetails is empty.");
+    //         }
+    //     }
+    // }, [chatDetails]);
     useEffect(() => {
         if (!token) {
             navigate('/login');
         }
 
         fetchAllChats();
+
         fetchSearchResults();
         fetchUserinfo();
 
@@ -233,7 +253,7 @@ const HomePage = () => {
 
         socket.on('message', (data) => {
             console.log("sent message", data.content)
-            fetchChatDetails(data.chatId);
+            fetchMessages(data.chatId);
             fetchAllChats();
         });
 
@@ -383,6 +403,7 @@ const HomePage = () => {
 
 
                                     />
+
                                     <hr className='border-[#8F5EF6]' />
                                 </div>
                             ))

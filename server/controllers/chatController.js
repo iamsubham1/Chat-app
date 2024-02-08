@@ -89,7 +89,7 @@ const getAllChats = async (req, res) => {
             .populate("groupAdmin", "-password")
             .populate({
                 path: "latestMessage",
-                populate: { path: "sender", select: "-password" } // Populate sender field in latestMessage
+                populate: { path: "sender", select: "-password" }
             })
             .sort({ "latestMessage.createdAt": -1 }); // Sort based on the createdAt timestamp of the latestMessage
 
