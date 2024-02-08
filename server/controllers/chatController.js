@@ -60,6 +60,7 @@ const createChat = async (req, res) => {
     }
 };
 
+//(tested and works) (used in client)
 const deleteChat = async (req, res) => {
     try {
         const reqUser = await req.user;
@@ -188,7 +189,7 @@ const removeParticipants = async (req, res) => {
     }
 }
 
-//get Chat info
+//get Chat info (used in client)
 const chatinfo = async (req, res) => {
     const chatId = req.params.id;
     try {

@@ -13,12 +13,8 @@ import io from 'socket.io-client';
 import defaultUserImage from '../assets/user.png';
 import { MdGroups } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
-
-
 import ModalComponent from './GroupModal';
 import ChatModalComponent from './ChatModal';
-
-
 import {
     getAllChats,
     searchUsers,
@@ -268,9 +264,9 @@ const HomePage = () => {
         setIsModalOpen(false);
     };
     const openChatModal = () => {
-        console.log("clicked")
+        // console.log("clicked")
         setIsChatModalOpen(true);
-        console.log(isChatModalOpen)
+        // console.log(isChatModalOpen)
     };
 
     const closeChatModal = () => {
@@ -292,7 +288,10 @@ const HomePage = () => {
         }
     };
 
+    const handleReceiverDataChange = (receiverData) => {
 
+        // console.log('Receiver data changed:', receiverData);
+    };
 
     const deleteChat = async (chatId) => {
         console.log('btn clicked')
@@ -318,6 +317,8 @@ const HomePage = () => {
             console.error('Error fetching chat details:', error.message);
         }
     }
+
+
     return (
         <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6 overflow-x-hidden">
 
@@ -378,7 +379,8 @@ const HomePage = () => {
                                     <hr className='border-[#8F5EF6]' />
 
                                     <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo}
-                                        onSelectChat={handleChatSelect}
+                                        onSelectChat={handleChatSelect}  // Pass the callback function
+
 
                                     />
                                     <hr className='border-[#8F5EF6]' />
@@ -394,7 +396,10 @@ const HomePage = () => {
                     <div className="top-10 left-0  z-1 flex items-center mb-4 max-h-[50px]">
 
                         {selectedChatInfo && (
-                            <img className="w-10 h-10 rounded-full mr-5 caret-transparent z-0" src={selectedChatInfo.isGroupChat ? selectedChatInfo.groupPic : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage} alt="Profile" />
+                            <img className="w-10 h-10 rounded-full mr-5 caret-transparent z-0" src={selectedChatInfo.isGroupChat ?
+                                (selectedChatInfo.groupPic ? selectedChatInfo.groupPic : defaultUserImage) :
+                                (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage)}
+                                alt="Profile" />
                         )}
                         <h6 className='z-5 text-[#a882d1] text-xl capitalize font-semibold z-0 cursor-pointer hover:text-white'
                             onClick={openChatModal} >
@@ -525,7 +530,7 @@ const HomePage = () => {
                 </div>
 
                 <ModalComponent isOpen={isModalOpen} closeModal={closeModal} className='' />
-                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} className='' />
+                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} receiverInfo={handleReceiverDataChange} className='' />
 
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>

@@ -14,7 +14,8 @@ const createMessage = async (req, res) => {
         let newMessage = {
             sender: reqUser.user._id,
             content: content,
-            chat: chatId
+            chat: chatId,
+            readBy: [reqUser.user._id],  // Add the user ID to the readBy array
         };
 
         const createdMessage = await Message.create(newMessage);
@@ -41,6 +42,7 @@ const createMessage = async (req, res) => {
 const getAllMessages = async (req, res) => {
     try {
         const chatId = req.params.id;
+        const reqUser = await req.user;
 
         let chatExists = await Chat.findById(chatId);
 
@@ -53,6 +55,14 @@ const getAllMessages = async (req, res) => {
             .populate("sender", "-password")
             .populate("chat");
 
+
+        // Mark messages as read by updating the readBy array
+        await Promise.all(messages.map(async (message) => {
+            if (!message.readBy.includes(reqUser.user._id)) {
+                message.readBy.push(reqUser.user._id);
+                await message.save();
+            }
+        }));
 
         return res.status(200).send(messages);
     } catch (error) {

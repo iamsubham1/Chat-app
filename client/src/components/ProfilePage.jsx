@@ -118,7 +118,7 @@ const ProfilePage = () => {
                                 <p className="PhoneNumber">{activeUserDetails ? activeUserDetails.phoneNumber : "xxxxx - xxxxx"}</p>
                             </div>
                             <div id="icons">
-                                <h2>{activeUserDetails ? activeUserDetails.about : ""}</h2>
+                                <h2 className='text-center'>{activeUserDetails ? activeUserDetails.about : ""}</h2>
                             </div>
                             <div id="btn">
                                 <button className="msg text-black" onClick={openEditModal}>Edit</button>
