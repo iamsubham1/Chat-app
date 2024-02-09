@@ -310,7 +310,6 @@ const HomePage = () => {
     };
 
     const handleReceiverDataChange = (receiverData) => {
-
         // console.log('Receiver data changed:', receiverData);
     };
 

@@ -4,7 +4,7 @@ import { getUserInfoById, chatInfo } from '../apis/api';
 import defaultUserImage from '../assets/user.png';
 import EditGroupModal from './EditGroupModal';
 
-const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, receiverInfo }) => {
+const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, receiverInfo, handleAddParticipants }) => {
 
     const [chatData, setChatData] = useState('');
     const [receiverData, setReceiverData] = useState('');
@@ -76,6 +76,10 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
         }
     };
 
+    const reloadInfoAfteredit = () => {
+        fetchChatDetails();
+    };
+
     useEffect(() => {
 
         if (chatData.isGroupChat) {
@@ -83,7 +87,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
         } else {
             receiverDetails();
         }
-    }, [chatData]);
+    }, [chatData, isModalOpen]);
 
     useEffect(() => {
         if (selectedChatId) { fetchChatDetails(); }
@@ -153,7 +157,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
                     </div>
                 </div>
             </div>
-            <EditGroupModal isOpen={isModalOpen} closeModal={closeEditModal} selectedChatId={selectedChatId} />
+            <EditGroupModal isOpen={isModalOpen} closeModal={closeEditModal} selectedChatId={selectedChatId} token={token} groupMembers={groupMembers} chatData={chatData} reloadInfoAfteredit={reloadInfoAfteredit} />
         </Modal>
     );
 };

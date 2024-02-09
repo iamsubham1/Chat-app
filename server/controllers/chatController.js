@@ -149,7 +149,7 @@ const renameGroup = async (req, res) => {
     }
 }
 
-//add participants to the group (tested and works)
+//add participants to the group (tested and works) 
 const addParticipants = async (req, res) => {
     try {
         const { chatId, userId } = req.body;
