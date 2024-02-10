@@ -113,12 +113,12 @@ const ProfilePage = () => {
                                 alt="" className="profile-pic" />
                         </div>
                         <div id="lower-bg">
-                            <div className="text">
+                            <div className="text text-2xl">
                                 <p className="name capitalize">{activeUserDetails ? activeUserDetails.name : "unknown"}</p>
-                                <p className="PhoneNumber">{activeUserDetails ? activeUserDetails.phoneNumber : "xxxxx - xxxxx"}</p>
+                                <p className="PhoneNumber text-xl">{activeUserDetails ? activeUserDetails.phoneNumber : "xxxxx - xxxxx"}</p>
                             </div>
                             <div id="icons">
-                                <h2 className='text-center'>{activeUserDetails ? activeUserDetails.about : ""}</h2>
+                                <h2 className='text-center text-[#A47FCC]'>{activeUserDetails ? activeUserDetails.about : ""}</h2>
                             </div>
                             <div id="btn">
                                 <button className="msg text-black" onClick={openEditModal}>Edit</button>

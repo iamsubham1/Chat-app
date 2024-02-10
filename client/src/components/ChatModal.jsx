@@ -3,8 +3,9 @@ import Modal from 'react-modal';
 import { getUserInfoById, chatInfo } from '../apis/api';
 import defaultUserImage from '../assets/user.png';
 import EditGroupModal from './EditGroupModal';
+import { IoClose } from "react-icons/io5";
 
-const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, receiverInfo, handleAddParticipants }) => {
+const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, fetchAllChats }) => {
 
     const [chatData, setChatData] = useState('');
     const [receiverData, setReceiverData] = useState('');
@@ -20,7 +21,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
             const data = await chatInfo(token, selectedChatId);
             // console.log('Chat details:', data);
             setChatData(data);
-            receiverInfo(data);
+
 
         } catch (error) {
             console.error('Error fetching chat details:', error.message);
@@ -115,10 +116,13 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, r
 
             <button onClick={() => {
                 closeModal();
+                fetchAllChats();
 
-            }} className='bg bg-red-600 absolute right-10 top-10'>Close</button>
+            }} className='absolute right-10 top-10'>
+                <IoClose className="text-[#f74545] text-4xl hover:text-[red]" />
+            </button>
 
-            <p></p>
+
 
             <div id="algn">
                 <div id="card">

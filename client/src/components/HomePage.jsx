@@ -309,9 +309,7 @@ const HomePage = () => {
         }
     };
 
-    const handleReceiverDataChange = (receiverData) => {
-        // console.log('Receiver data changed:', receiverData);
-    };
+
 
     const deleteChat = async (chatId) => {
         console.log('btn clicked')
@@ -354,8 +352,8 @@ const HomePage = () => {
 
                     <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
                         <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
-                            <img className="rounded-full w-10 h-10 cursor-pointer" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
-                            <p className='capitalize'>{userInfo.name}</p>
+                            <img className="rounded-full w-10 h-10 cursor-pointer hover:border-2" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
+                            <p className='capitalize text-xl text-[#A47FCC]'>{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
                             <TbCircleDashed className='text-[#c7c7c7] ' />
@@ -550,7 +548,7 @@ const HomePage = () => {
                 </div>
 
                 <GroupModalComponent isOpen={isModalOpen} closeModal={closeModal} />
-                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} receiverInfo={handleReceiverDataChange} />
+                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} fetchAllChats={fetchAllChats} />
 
             </div>
             <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>

@@ -174,6 +174,8 @@ const GroupModalComponent = ({ isOpen, closeModal }) => {
                                 closeModal();
                                 setSelectedUserDetails([]);
                                 setSelectedUserIds([]);
+
+
                             }}
                         >
                             Close
