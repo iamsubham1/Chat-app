@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const verifyUser = require('../middleware/verifyUser')
-const { currentUserDetails, findUserById, searchUser, editUser, deleteUser } = require('../controllers/userController')
+const { currentUserDetails, findUserById, searchUser, editUser, deleteUser, uploadImage } = require('../controllers/userController')
 
 
 //current user profile route
@@ -17,7 +17,9 @@ router.get('/search', verifyUser, searchUser);
 router.put('/edit/:id', verifyUser, editUser);
 
 //delete account
-router.delete('/delete/:id', verifyUser, deleteUser)
+router.delete('/delete/:id', verifyUser, deleteUser);
+
+router.post('/uploadImg', verifyUser, uploadImage);
 
 
 module.exports = router

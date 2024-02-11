@@ -3,6 +3,8 @@ const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const connectToMongo = require('./db');
+const multer = require('multer')
+
 require('dotenv').config()
 
 const port = process.env.PORT || 6060;
