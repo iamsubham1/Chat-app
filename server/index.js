@@ -20,17 +20,11 @@ const io = socketIO(server, {
     pingInterval: 120000,
 });
 
-
-
-
-
 const corsOptions = {
     origin: process.env.origin,
     methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
     credentials: true
 };
-
-
 
 app.use(cors(corsOptions));
 
@@ -59,23 +53,34 @@ const startServer = async () => {
 
         // Socket.IO connection
         io.on('connection', (socket) => {
-
             console.log(`User connected with socket ID: ${socket.id}`);
 
-            // Handle events
+            // Handle joining a room
+            socket.on('joinRoom', (room) => {
+                socket.join(room);
+                console.log(`User ${socket.id} joined room ${room}`);
+            });
+
+            // Handle the 'message' event
             socket.on('message', (data) => {
                 console.log('Received message:', data.chatId);
-                io.emit('message', data);
+
+                // Broadcast the message to everyone in the specific room
+                io.to(data.chatId).emit('message', data);
             });
 
-
+            // Handle the 'typing' event
             socket.on('typing', ({ chatId, isTyping }) => {
-                // Broadcast the typing status to all users in the chat
                 console.log(`Received typing status from user ${socket.userId} in chat ${chatId}: ${isTyping}`);
 
-                socket.broadcast.emit('typing', { userId: socket.userId, isTyping });
+                // Broadcast the typing status to everyone in the specific room
+                io.to(chatId).emit('typing', { userId: socket.userId, isTyping });
             });
 
+            // Clean up on disconnect
+            socket.on('disconnect', () => {
+                console.log(`User disconnected with socket ID: ${socket.id}`);
+            });
         });
 
 

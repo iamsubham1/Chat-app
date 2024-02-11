@@ -69,8 +69,9 @@ export const getMessages = async (token, chatId) => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-
-        return response.json();
+        const messages = await response.json();
+        console.log(messages);
+        return messages;
     } catch (error) {
         console.error('Error fetching chat details:', error.message);
         throw error;
@@ -96,7 +97,7 @@ export const sendMessage = async (token, chatId, messageContent) => {
             throw new Error('Network response was not ok');
         }
 
-        return true;
+        return response;
     } catch (error) {
         console.error('Error sending message:', error.message);
         return false;

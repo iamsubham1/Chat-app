@@ -67,6 +67,8 @@ const HomePage = () => {
 
             if (createdChatId) {
                 console.log("Chat created with id:", createdChatId);
+                socket.emit('joinRoom', createdChatId);
+
                 setSelectedChatId(createdChatId);
                 fetchMessages(createdChatId);
             }
@@ -74,6 +76,8 @@ const HomePage = () => {
             // Handle the selection of an existing chat (e.g., fetch chat details)
             setSelectedChatId(chatId);
             fetchMessages(chatId);
+            socket.emit('joinRoom', chatId);
+
         }
     };
 
