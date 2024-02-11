@@ -34,7 +34,7 @@ const HomePage = () => {
 
     const token = getCookie('JWT');
 
-
+    let participantStatusVideo;
 
     const navigate = useNavigate();
 
@@ -52,11 +52,15 @@ const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChatModalOpen, setIsChatModalOpen] = useState(false);
     const [unreadMessages, setUnreadMessages] = useState(0);
+    const [showstatus, setShowStatus] = useState(false);
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
-
+    const handleVideoEnded = () => {
+        // Callback when the video has ended
+        setShowStatus(false);
+    };
     const handleChatSelect = async (chatId, searchUser) => {
         // If it's a searched user, create a new chat if not already existing
         if (searchUser) {
@@ -163,6 +167,7 @@ const HomePage = () => {
         try {
             const userData = await getUserInfo(token);
             setUserInfo(userData);
+            console.log(userData.statusVideo);
         } catch (error) {
             console.error('Error fetching user info:', error.message);
         }
@@ -302,6 +307,7 @@ const HomePage = () => {
         if (selectedChatId) {
             const selectedChat = allChats.find(chat => chat._id === selectedChatId);
             setSelectedChatInfo(selectedChat);
+
         }
         scrollToBottom();
     }, [chatDetails, selectedChatId, allChats]);
@@ -417,12 +423,29 @@ const HomePage = () => {
 
                     <div className="top-10 left-0  z-1 flex items-center mb-4 max-h-[50px]">
 
+
                         {selectedChatInfo && (
-                            <img className="w-10 h-10 rounded-full mr-5 caret-transparent z-0" src={selectedChatInfo.isGroupChat ?
-                                (selectedChatInfo.groupPic ? selectedChatInfo.groupPic : defaultUserImage) :
-                                (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage)}
-                                alt="Profile" />
+                            <img className={`w-10 h-10 rounded-full mr-5 caret-transparent z-0 ${!selectedChatInfo.isGroupChat ? (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo).length >= 1 ? 'gradient' : '' : ""}`}
+                                src={selectedChatInfo.isGroupChat ?
+                                    (selectedChatInfo.groupPic ? selectedChatInfo.groupPic : defaultUserImage) :
+                                    (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage)}
+                                alt="Profile" onClick={() => {
+                                    participantStatusVideo = selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo;
+                                    console.log(participantStatusVideo);
+                                    if (!selectedChatInfo.groupPic) {
+                                        if (participantStatusVideo.length >= 1) {
+                                            setShowStatus(true);
+                                        }
+                                    }
+
+                                }} />
                         )}
+
+
+
+
+
+
                         <h6 className='z-5 text-[#a882d1] text-xl capitalize font-semibold z-0 cursor-pointer hover:text-white'
                             onClick={openChatModal} >
 
@@ -458,7 +481,6 @@ const HomePage = () => {
 
                             </div>
                         )}
-
 
 
                     </div>
@@ -545,11 +567,30 @@ const HomePage = () => {
                             </div>
                         )}
 
+                        {showstatus && (
+                            <div className='video bg-[#000000] w-[30vw] h-[80vh] flexprop absolute top-0 '>
+                                <button
+                                    className="absolute top-2 right-2 text-white text-lg cursor-pointer"
+                                    onClick={() => setShowStatus(false)}
+                                >
+                                    Close
+                                </button>
+                                <video autoPlay muted width="540" height="600" className='z-10' onEnded={handleVideoEnded}>
+                                    <source
+                                        src={selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo}
+                                        type="video/mp4"
+                                    />
+                                    Your browser does not support the video tag.
+                                </video></div>
+                        )
+                        }
 
                     </div>
 
 
                 </div>
+
+
 
                 <GroupModalComponent isOpen={isModalOpen} closeModal={closeModal} />
                 <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} fetchAllChats={fetchAllChats} />

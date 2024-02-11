@@ -27,7 +27,10 @@ const userSchema = new mongoose.Schema({
     profilePic: {
         type: String,
 
-    }
+    },
+    statusVideo: [{
+        type: String,
+    }]
 })
 
 const User = mongoose.model('User', userSchema)

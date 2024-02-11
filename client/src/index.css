@@ -354,3 +354,15 @@ color:#E7E9EB;
 .padding{
   padding: 0;
 }
+
+
+
+
+.gradient{
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(to right, red, orange);
+  padding: 3px;
+}
+
