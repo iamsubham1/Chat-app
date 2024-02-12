@@ -97,7 +97,7 @@ export const sendMessage = async (token, chatId, messageContent) => {
             throw new Error('Network response was not ok');
         }
 
-        return response;
+        return response.json();
     } catch (error) {
         console.error('Error sending message:', error.message);
         return false;
