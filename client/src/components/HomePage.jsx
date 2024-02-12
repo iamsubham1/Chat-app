@@ -34,7 +34,7 @@ const HomePage = () => {
 
     const token = getCookie('JWT');
 
-    let participantStatusVideo;
+    let participantStatusVideo = [];
 
     const navigate = useNavigate();
 
@@ -51,16 +51,19 @@ const HomePage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChatModalOpen, setIsChatModalOpen] = useState(false);
-    const [unreadMessages, setUnreadMessages] = useState(0);
     const [showstatus, setShowStatus] = useState(false);
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
-    const handleVideoEnded = () => {
+
+    const handleVideoEnd = () => {
         // Callback when the video has ended
+
         setShowStatus(false);
+
     };
+
     const handleChatSelect = async (chatId, searchUser) => {
         // If it's a searched user, create a new chat if not already existing
         if (searchUser) {
@@ -236,6 +239,9 @@ const HomePage = () => {
     //         }
     //     }
     // }, [chatDetails]);
+
+
+
     useEffect(() => {
         if (!token) {
             navigate('/login');
@@ -318,8 +324,6 @@ const HomePage = () => {
             messagesContainer.scrollTop = messagesContainer.scrollHeight
         }
     };
-
-
 
     const deleteChat = async (chatId) => {
         console.log('btn clicked')
@@ -425,7 +429,8 @@ const HomePage = () => {
 
 
                         {selectedChatInfo && (
-                            <img className={`w-10 h-10 rounded-full mr-5 caret-transparent z-0 ${!selectedChatInfo.isGroupChat ? (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo).length >= 1 ? 'gradient' : '' : ""}`}
+                            <img className={`w-10 h-10 rounded-full mr-5 caret-transparent z-0
+                             ${!selectedChatInfo.isGroupChat ? (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo).length >= 1 ? 'gradient , cursor-pointer' : '' : ""}`}
                                 src={selectedChatInfo.isGroupChat ?
                                     (selectedChatInfo.groupPic ? selectedChatInfo.groupPic : defaultUserImage) :
                                     (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage)}
@@ -575,7 +580,9 @@ const HomePage = () => {
                                 >
                                     Close
                                 </button>
-                                <video autoPlay muted width="540" height="600" className='z-10' onEnded={handleVideoEnded}>
+
+
+                                <video autoPlay muted width="540" height="600" className='z-10' onEnded={handleVideoEnd}>
                                     <source
                                         src={selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo}
                                         type="video/mp4"

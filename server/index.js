@@ -58,27 +58,21 @@ const startServer = async () => {
             console.log(`User connected with socket ID: ${socket.id}`);
 
             // Handle joining a room
-            socket.on('joinRoom', (room) => {
-                socket.join(room);
-                console.log(`User ${socket.id} joined room ${room}`);
-            });
+            console.log(`User connected with socket ID: ${socket.id}`);
 
-            // Handle the 'message' event
+            // Handle events
             socket.on('message', (data) => {
                 console.log('Received message:', data.chatId);
-
-                // Broadcast the message to everyone in the specific room
-                io.to(data.chatId).emit('message', data);
+                io.emit('message', data);
             });
 
-            // Handle the 'typing' event
+
             socket.on('typing', ({ chatId, isTyping }) => {
+                // Broadcast the typing status to all users in the chat
                 console.log(`Received typing status from user ${socket.userId} in chat ${chatId}: ${isTyping}`);
 
-                // Broadcast the typing status to everyone in the specific room
-                io.to(chatId).emit('typing', { userId: socket.userId, isTyping });
+                socket.broadcast.emit('typing', { userId: socket.userId, isTyping });
             });
-
             // Clean up on disconnect
             socket.on('disconnect', () => {
                 console.log(`User disconnected with socket ID: ${socket.id}`);

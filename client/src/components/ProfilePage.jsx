@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import defaultUserImage from '../assets/user.png';
 import { IoHomeSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { getUserInfo } from '@/apis/api';
 import { getCookie } from '@/utility/getcookie';
+import { MdEdit } from "react-icons/md";
 
 Modal.setAppElement('#root'); // Set the root element for the modal
 
 const ProfilePage = () => {
     const token = getCookie('JWT');
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
 
     const [activeUserDetails, setActiveUserDetails] = useState('');
+    const [isuploading, setIsuploading] = useState(false);
 
 
-    const [profilePic, setProfilePic] = useState('');
 
 
     const [editData, setEditData] = useState({
@@ -26,6 +28,51 @@ const ProfilePage = () => {
     })
 
     const [isEditing, setIsEditing] = useState(false);
+    const handleUpload = () => {
+        fileInputRef.current.click();
+    }
+
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files && event.target.files[0];
+
+        try {
+            setIsuploading(true);
+            console.log('File selected:', file);
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            console.log('Sending file to server...');
+            const response = await fetch('http://localhost:8080/api/user/uploadImg', {
+                method: 'POST',
+                headers: {
+                    'JWT': token,
+                },
+                credentials: 'include',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Error uploading file');
+            }
+
+            console.log('File upload successful. Retrieving response data...');
+            const data = await response.json();
+            console.log('File uploaded successfully:', data);
+
+            console.log('Updating profile picture key...');
+
+
+            // window.location.reload();
+        } catch (error) {
+            console.error('Error:', error.message);
+        } finally {
+            console.log('File upload process completed.');
+            setIsuploading(false);
+        }
+    };
+
 
     const handleInput = (e) => {
         const { name, value } = e.target
@@ -97,7 +144,7 @@ const ProfilePage = () => {
 
         getActiveUserDetails()
 
-    }, []);
+    }, [isuploading]);
 
     return (
         <>
@@ -111,6 +158,18 @@ const ProfilePage = () => {
                         <div id="upper-bg" className='bg-red-600'>
                             <img src={activeUserDetails && activeUserDetails.profilePic ? activeUserDetails.profilePic : defaultUserImage}
                                 alt="" className="profile-pic" />
+                            <form encType="multipart/form-data" method='post' >
+
+
+                                <input
+                                    type='file'
+                                    id='picInput'
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
+                            </form>
+                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute bottom-1 right-20' onClick={handleUpload} />
                         </div>
                         <div id="lower-bg">
                             <div className="text text-2xl">

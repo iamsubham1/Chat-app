@@ -205,4 +205,47 @@ const uploadImage = async (req, res) => {
         res.status(500).json({ message: 'Error handling photo upload' });
     }
 }
-module.exports = { currentUserDetails, findUserById, searchUser, editUser, deleteUser, uploadImage };
+
+const uploadVideo = async (req, res) => {
+    try {
+        upload.single('video')(req, res, async () => {
+            const userId = req.user.user._id;
+            console.log(userId);
+
+            const userData = await User.findById(userId);
+            if (!userData) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const inputUrl = req.file.path;
+
+            cloudinary.uploader.upload(inputUrl, { resource_type: 'video' }, async (error, result) => {
+                // Always delete the temporary file, whether Cloudinary upload succeeds or not
+                fs.unlink(inputUrl, (err) => {
+                    if (err) {
+                        console.error(`Error deleting file: ${err}`);
+                    }
+                    console.log('Temporary file deleted successfully');
+                });
+
+                if (error) {
+                    console.error(`Error uploading to Cloudinary: ${error}`);
+                    return res.status(500).json({ message: 'Error uploading to Cloudinary' });
+                }
+
+                await User.findByIdAndUpdate(
+                    userId,
+                    { statusVideo: result.secure_url }
+                );
+
+                res.status(201).json({ message: 'Video uploaded successfully' });
+            });
+        });
+    } catch (err) {
+        console.error('Error in uploadVideo', err);
+        return res.status(500).json({ message: 'Internal server error: ' + err.message });
+    }
+};
+
+
+module.exports = { currentUserDetails, findUserById, searchUser, editUser, deleteUser, uploadImage, uploadVideo };
