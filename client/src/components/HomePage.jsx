@@ -24,7 +24,10 @@ import {
 } from '../apis/api';
 import TypingCard from './TypingCard';
 
-let socket;
+const socket = io('http://localhost:8080', {
+    transports: ['websocket'],
+
+})
 
 
 const HomePage = () => {
@@ -44,12 +47,11 @@ const HomePage = () => {
     const [chatDetails, setChatDetails] = useState(null);
     const [messageContent, setMessageContent] = useState('');
     const [istyping, setIsTyping] = useState(false);
-    // const [showTyping, setShowTyping] = useState(false);
+    const [showTyping, setShowTyping] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChatModalOpen, setIsChatModalOpen] = useState(false);
     const [showstatus, setShowStatus] = useState(false);
-    const [socketConnected, setsocketConnected] = useState(false);
 
 
 
@@ -74,7 +76,6 @@ const HomePage = () => {
 
             if (createdChatId) {
                 console.log("Chat created with id:", createdChatId);
-                socket.emit('joinRoom', createdChatId);
 
                 setSelectedChatId(createdChatId);
                 fetchMessages(createdChatId);
@@ -83,7 +84,6 @@ const HomePage = () => {
             // Handle the selection of an existing chat (e.g., fetch chat details)
             setSelectedChatId(chatId);
             fetchMessages(chatId);
-            socket.emit('joinChat', chatId);
 
         }
     };
@@ -95,8 +95,8 @@ const HomePage = () => {
 
             if (success) {
                 console.log(success);
-                //data
-                socket.emit('new message', success);
+                //data  
+                socket.emit('message', { content: messageContent, chatId: selectedChatId });
 
                 setMessageContent('');
                 fetchMessages(selectedChatId);
@@ -239,26 +239,6 @@ const HomePage = () => {
     //     }
     // }, [chatDetails]);
 
-    useEffect(() => {
-        socket = io('http://localhost:8080');
-
-
-        socket.emit('setup', userInfo);
-
-
-        socket.on('connection', () => {
-            setsocketConnected(true);
-        })
-
-        socket.onAny((event, ...args) => {
-            console.log(`Received event: ${event}`, args);
-        });
-        // Set up event listener for 'message received'
-        socket.on('message', (newMessageReceived) => {
-            console.log(newMessageReceived);
-        });
-
-    }, [userInfo]);
 
 
     useEffect(() => {
@@ -266,19 +246,51 @@ const HomePage = () => {
             navigate('/login');
         }
 
-
         fetchAllChats();
+
         fetchSearchResults();
         fetchUserinfo();
 
+        socket.connect();
+
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+
+        socket.on('disconnect', (reason) => {
+            console.log('Disconnected from Socket.IO server. Reason:', reason);
+        });
+
+        socket.on('error', (error) => {
+            console.error('Socket.IO Error:', error);
+        });
+
+        socket.on('message', (data) => {
+            console.log("sent message", data.content)
+            fetchMessages(data.chatId);
+            fetchAllChats();
+        });
+
+        socket.on('typing', (data) => {
+            console.log("typing status on client side is ", data.isTyping)
+            // console.log("typing user is ", userId)
+            if (data.isTyping) {
+                setShowTyping(true)
+            } else {
+                setShowTyping(false)
+
+            }
 
 
-    }, [token, selectedChatId,]);
+        });
 
-    useEffect(() => {
+        return () => {
+            socket.disconnect();
+            // console.log('Socket.IO disconnected on component unmount');
+        };
+    }, []);
 
 
-    });
 
 
     const openModal = () => {
@@ -527,7 +539,9 @@ const HomePage = () => {
 
 
                                             </div>
-
+                                            {showTyping && (
+                                                <TypingCard className=".typingCard " />
+                                            )}
                                         </div>
 
                                     ))}

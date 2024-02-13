@@ -53,45 +53,22 @@ const startServer = async () => {
             res.send('server health is ok');
         });
 
-        // Socket.IO connection
         io.on('connection', (socket) => {
+
             console.log(`User connected with socket ID: ${socket.id}`);
 
-            socket.on('setup', (userData) => {
-
-                console.log(userData._id);
-                socket.emit('connected');
-
-            })
-
-
-            socket.on('joinChat', (room) => {
-                socket.join(room);
-                console.log("user joined : ", room)
-            })
-
-
-            socket.on('new message', (newMessageReceived) => {
-                // console.log(newMessageReceived);
-                var chat = newMessageReceived.chat;
-                if (!chat.participants) return console.log("chat participants not found")
-
-                chat.participants.forEach((user) => {
-                    console.log('Loop iteration for user:', user.id);
-                    console.log("sender is:", newMessageReceived.sender);
-                    if (user == newMessageReceived.sender._id) return;
-                    socket.in(user).emit('message', 'this is new');
-
-                });
-
+            // Handle events
+            socket.on('message', (data) => {
+                console.log('Received message:', data.chatId);
+                io.emit('message', data);
             });
 
-            socket.on('global event', (data) => {
-                console.log('Received global event:', data);
-            });
 
-            socket.onAny((event, ...args) => {
-                console.log(`Received event: ${event}`, args);
+            socket.on('typing', ({ chatId, isTyping }) => {
+                // Broadcast the typing status to all users in the chat
+                console.log(`Received typing status from user ${socket.userId} in chat ${chatId}: ${isTyping}`);
+
+                socket.broadcast.emit('typing', { userId: socket.userId, isTyping });
             });
 
         });
