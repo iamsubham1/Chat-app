@@ -226,6 +226,7 @@ const HomePage = () => {
         };
     }, [istyping, selectedChatId])
 
+
     // useEffect(() => {
     //     // Ensure chatDetails is not null or undefined
     //     if (chatDetails) {

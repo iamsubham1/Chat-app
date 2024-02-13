@@ -25,7 +25,7 @@ const ProfilePage = () => {
         name: '',
         about: ''
 
-    })
+    });
 
     const [isEditing, setIsEditing] = useState(false);
     const handleUpload = () => {
@@ -169,7 +169,7 @@ const ProfilePage = () => {
                                     onChange={handleFileChange}
                                 />
                             </form>
-                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute bottom-1 right-20' onClick={handleUpload} />
+                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute bottom-1 right-[30%]' onClick={handleUpload} />
                         </div>
                         <div id="lower-bg">
                             <div className="text text-2xl">
