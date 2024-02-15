@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BiCommentDetail } from 'react-icons/bi';
 import { TbCircleDashed } from 'react-icons/tb';
 import { IoMdMore } from 'react-icons/io';
@@ -31,6 +31,7 @@ const socket = io('http://localhost:8080', {
 
 
 const HomePage = () => {
+    const fileInputRef = useRef(null);
 
     const token = getCookie('JWT');
 
@@ -374,6 +375,17 @@ const HomePage = () => {
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
                             <TbCircleDashed className='text-[#c7c7c7] ' />
+                            <form encType="multipart/form-data" method='post' >
+
+
+                                <input
+                                    type='file'
+                                    id='videoInput'
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                // onChange={handleFileChange}
+                                />
+                            </form>
                             <BiCommentDetail className='text-[#c7c7c7]' />
                             <IoMdMore className='text-[#c7c7c7]' />
                         </div>
