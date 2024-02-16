@@ -53,8 +53,7 @@ const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChatModalOpen, setIsChatModalOpen] = useState(false);
     const [showstatus, setShowStatus] = useState(false);
-
-
+    const [loading, setloading] = useState(false);
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -156,6 +155,7 @@ const HomePage = () => {
 
     const fetchAllChats = async () => {
         try {
+
             const data = await getAllChats(token);
             setAllChats(data);
         } catch (error) {
@@ -167,6 +167,7 @@ const HomePage = () => {
         try {
             const data = await searchUsers(token, keyword);
             setSearchResults(data);
+
         } catch (error) {
             console.error('Error fetching search results:', error.message);
         }
@@ -200,7 +201,7 @@ const HomePage = () => {
         const file = event.target.files && event.target.files[0];
 
         try {
-            // setIsuploading(true);
+            setloading(true);
             console.log('File selected:', file);
 
             const formData = new FormData();
@@ -222,17 +223,13 @@ const HomePage = () => {
 
             console.log('File upload successful. Retrieving response data...');
             const data = await response.json();
-            console.log('File uploaded successfully:', data);
-
-            console.log('Updating profile picture key...');
-
-
-            // window.location.reload();
         } catch (error) {
             console.error('Error:', error.message);
         } finally {
             console.log('File upload process completed.');
-            // setIsuploading(false);
+            setloading(false);
+            alert('status uploaded')
+
         }
     };
 
@@ -356,15 +353,6 @@ const HomePage = () => {
         setIsChatModalOpen(false);
     };
 
-    useEffect(() => {
-        if (selectedChatId) {
-            const selectedChat = allChats.find(chat => chat._id === selectedChatId);
-            setSelectedChatInfo(selectedChat);
-
-        }
-        scrollToBottom();
-    }, [chatDetails, selectedChatId, allChats]);
-
     const scrollToBottom = () => {
         const messagesContainer = document.querySelector('.messagesContainer');
         if (messagesContainer) {
@@ -396,6 +384,23 @@ const HomePage = () => {
             console.error('Error fetching chat details:', error.message);
         }
     }
+
+    useEffect(() => {
+        if (selectedChatId) {
+            const selectedChat = allChats.find(chat => chat._id === selectedChatId);
+            setSelectedChatInfo(selectedChat);
+
+        }
+        scrollToBottom();
+
+
+    }, [chatDetails, selectedChatId, allChats]);
+    if (loading) {
+        return (<div className="spinner-border" role="status" id='spinner'>
+            <span className="visually-hidden">Loading...</span>
+        </div>)
+    }
+
 
 
     return (
@@ -429,6 +434,7 @@ const HomePage = () => {
                                     onChange={handleVideoFileChange}
                                 />
                             </form>
+
                             <BiCommentDetail className='text-[#c7c7c7]' />
                             <IoMdMore className='text-[#c7c7c7]' />
                         </div>
