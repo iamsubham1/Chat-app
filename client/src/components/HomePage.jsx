@@ -193,6 +193,49 @@ const HomePage = () => {
         }
     };
 
+    const handleUpload = () => {
+        fileInputRef.current.click();
+    }
+    const handleVideoFileChange = async (event) => {
+        const file = event.target.files && event.target.files[0];
+
+        try {
+            // setIsuploading(true);
+            console.log('File selected:', file);
+
+            const formData = new FormData();
+            formData.append('video', file);
+
+            console.log('Sending file to server...');
+            const response = await fetch('http://localhost:8080/api/user/uploadVideo', {
+                method: 'POST',
+                headers: {
+                    'JWT': token,
+                },
+                credentials: 'include',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Error uploading file');
+            }
+
+            console.log('File upload successful. Retrieving response data...');
+            const data = await response.json();
+            console.log('File uploaded successfully:', data);
+
+            console.log('Updating profile picture key...');
+
+
+            // window.location.reload();
+        } catch (error) {
+            console.error('Error:', error.message);
+        } finally {
+            console.log('File upload process completed.');
+            // setIsuploading(false);
+        }
+    };
+
 
     const sortedChats = [...allChats].sort((chatA, chatB) => {
         const timeA = chatA.latestMessage ? new Date(chatA.latestMessage.createdAt) : 0;
@@ -374,7 +417,7 @@ const HomePage = () => {
                             <p className='capitalize text-xl text-[#A47FCC]'>{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
-                            <TbCircleDashed className='text-[#c7c7c7] ' />
+                            <TbCircleDashed className='text-[#c7c7c7] hover:text-[#9678FF] hover:cursor-pointer' onClick={handleUpload} />
                             <form encType="multipart/form-data" method='post' >
 
 
@@ -383,7 +426,7 @@ const HomePage = () => {
                                     id='videoInput'
                                     ref={fileInputRef}
                                     style={{ display: 'none' }}
-                                // onChange={handleFileChange}
+                                    onChange={handleVideoFileChange}
                                 />
                             </form>
                             <BiCommentDetail className='text-[#c7c7c7]' />
