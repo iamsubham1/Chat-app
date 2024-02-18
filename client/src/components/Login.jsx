@@ -125,6 +125,8 @@ const LoginForm = () => {
               Login
             </button>
           </form>
+          <h6 className='text-white my-5'><Link to='/signup' className='text-[rgba(125,74,180,1)] hover:text-white'>
+            Forget Password ?</Link></h6>
           <h6 className='text-white my-5'>Dont have an account ? <Link to='/signup' className='text-[rgba(125,74,180,1)] hover:text-white'>
             Create</Link></h6>
         </div>

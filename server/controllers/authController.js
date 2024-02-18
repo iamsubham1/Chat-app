@@ -48,9 +48,9 @@ const loginController = async (req, res) => {
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
-        const { number, password, email } = req.body;
+        const { password, email } = req.body;
         // console.log(req.body)
-        let user = await User.findOne({ $or: [{ email: email }, { phoneNumber: number }] });
+        let user = await User.findOne({ email: email });
 
         if (user) {
             const passwordCompare = await bcrypt.compare(password, user.password);
@@ -75,4 +75,30 @@ const loginController = async (req, res) => {
     }
 };
 
-module.exports = { signUpController, loginController };
+// forgotPassword
+const verifyEmail = async (req, res) => {
+    const { email } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        res.status(200).json({ message: true });
+        return;
+    }
+    res.status(404).json({ message: false });
+};
+
+
+const passwordChange = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const updatePassword = await User.updateOne({ email }, { password });
+        if (updatePassword) {
+            res.status(200).json({ message: "Password changed successfully" });
+        } else {
+            res.status(404).json({ message: "Password not changed" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error changing Password" });
+    }
+};
+//forgetPassword
+module.exports = { signUpController, loginController, verifyEmail, passwordChange };

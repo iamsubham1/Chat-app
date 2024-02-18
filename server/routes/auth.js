@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { body } = require('express-validator');
-const { loginController, signUpController } = require('../controllers/authController');
+const { loginController, signUpController, verifyEmail, passwordChange } = require('../controllers/authController');
 
 require('dotenv').config({ path: '.env' });
 
@@ -19,5 +19,9 @@ router.post('/signup', [
 router.post('/login', [
     body('password', 'Password cannot be empty').exists(),
 ], loginController);
+
+router.post('/verifyEmail', verifyEmail);
+
+router.post('/changePassword', passwordChange);
 
 module.exports = router
