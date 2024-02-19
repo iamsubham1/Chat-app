@@ -71,7 +71,7 @@ const Signup = () => {
 
                     <form onSubmit={handleSubmit}>
 
-                        Copy code
+
                         <div className="mb-4">
 
                             <input

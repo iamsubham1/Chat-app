@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import ProfilePage from './components/ProfilePage';
 import Login from './components/Login';
 import Signup from './components/SignUp';
+import ResetPasswordPage from './components/ResetPasswordPage';
 
 
 
@@ -16,7 +17,7 @@ function App() {
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
-
+        <Route path='/resetpassword' element={<ResetPasswordPage />} />
       </Routes>
     </Router>
   )

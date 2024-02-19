@@ -104,7 +104,7 @@ const LoginForm = () => {
                 onChange={handleInput}
                 required
                 placeholder="Password"
-                className="mt-1 p-2 w-full border rounded-md border-2 focus:outline-8 focus:border-blue-500 bg-transparent text-white focus:bg-transparent"
+                className="mt-1 p-2 w-full rounded-md border-2 focus:outline-8 focus:border-blue-500 bg-transparent text-white focus:bg-transparent"
               />
               {showPassword ? (
                 <FaRegEye
@@ -125,7 +125,7 @@ const LoginForm = () => {
               Login
             </button>
           </form>
-          <h6 className='text-white my-5'><Link to='/signup' className='text-[rgba(125,74,180,1)] hover:text-white'>
+          <h6 className='text-white my-5'><Link to='/resetpassword' className='text-[rgba(125,74,180,1)] hover:text-white'>
             Forget Password ?</Link></h6>
           <h6 className='text-white my-5'>Dont have an account ? <Link to='/signup' className='text-[rgba(125,74,180,1)] hover:text-white'>
             Create</Link></h6>

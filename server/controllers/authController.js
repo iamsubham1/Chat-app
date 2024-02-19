@@ -100,5 +100,6 @@ const passwordChange = async (req, res) => {
         res.status(500).json({ message: "Error changing Password" });
     }
 };
+
 //forgetPassword
 module.exports = { signUpController, loginController, verifyEmail, passwordChange };
