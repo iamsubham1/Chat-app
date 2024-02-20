@@ -241,6 +241,7 @@ const uploadVideo = async (req, res) => {
                 res.status(201).json({ message: 'Video uploaded successfully' });
             });
         });
+
     } catch (err) {
         console.error('Error in uploadVideo', err);
         return res.status(500).json({ message: 'Internal server error: ' + err.message });
