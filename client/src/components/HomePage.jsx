@@ -243,15 +243,17 @@ const HomePage = () => {
     const handleProfile = () => {
         navigate('/profile')
     }
+
+
     useEffect(() => {
         if (keyword !== '') {
             // If keyword is not empty, fetch search results
             fetchSearchResults();
         } else {
-            setKeyword("")
-            fetchSearchResults()
+            setKeyword("");
+            fetchSearchResults();
         }
-    }, [keyword]);
+    }, []);
 
 
     useEffect(() => {

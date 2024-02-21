@@ -12,15 +12,13 @@ Modal.setAppElement('#root'); // Set the root element for the modal
 const ProfilePage = () => {
     const token = getCookie('JWT');
     const navigate = useNavigate();
+
+
     const fileInputRef = useRef(null);
 
 
     const [activeUserDetails, setActiveUserDetails] = useState('');
     const [isuploading, setIsuploading] = useState(false);
-
-
-
-
     const [editData, setEditData] = useState({
         name: '',
         about: ''
@@ -28,6 +26,8 @@ const ProfilePage = () => {
     });
 
     const [isEditing, setIsEditing] = useState(false);
+
+
     const handleUpload = () => {
         fileInputRef.current.click();
     }

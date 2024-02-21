@@ -3,7 +3,18 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserSchema");
+const nodemailer = require("nodemailer");
 
+const transporter = nodemailer.createTransport({
+    host: "smtp.forwardemail.net",
+    port: 465,
+    secure: true,
+    auth: {
+        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+        user: "REPLACE-WITH-YOUR-ALIAS@YOURDOMAIN.COM",
+        pass: "REPLACE-WITH-YOUR-GENERATED-PASSWORD",
+    },
+});
 //signup (tested and works) (used in client)
 const signUpController = async (req, res) => {
     try {
@@ -100,6 +111,13 @@ const passwordChange = async (req, res) => {
         res.status(500).json({ message: "Error changing Password" });
     }
 };
+
+
+const sendOtpEmail = async (req, res) => {
+
+}
+
+
 
 //forgetPassword
 module.exports = { signUpController, loginController, verifyEmail, passwordChange };

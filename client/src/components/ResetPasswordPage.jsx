@@ -44,6 +44,7 @@ const ResetPasswordPage = () => {
             console.error('Network error:', error);
         }
     };
+
     return (
         <div className="h-screen flex  font-semibold font-poppins signup blackBg">
 
