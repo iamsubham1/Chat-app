@@ -9,12 +9,12 @@ const otpGenerator = require("otp-generator");
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.forwardemail.net",
+    host: "smtp.mailgun.org",
     port: 465,
     secure: true,
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EmailPassword
+        user: process.env.USER,
+        pass: process.env.PASSWORD
     },
 });
 
@@ -117,15 +117,21 @@ const passwordChange = async (req, res) => {
 
 
 const sendOtpEmail = async (req, res) => {
-    // Generate OTP
+
     const otp = otpGenerator.generate(4, {
         digits: true,
         alphabets: false,
         upperCase: false,
         specialChars: false,
     });
+
+
+    const { email } = req.body;
+
+    // Generate OTP
+
     const mailOptions = {
-        from: `NetTeam Support <${process.env.EMAIL}>`,
+        from: `.Connect_support <${process.env.EMAIL}>`,
         to: email,
         subject: "Email Verification",
         text: `Your OTP is: ${otp}`,
@@ -135,9 +141,7 @@ const sendOtpEmail = async (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log("Error:", error);
-            res
-                .status(500)
-                .json({ error: "An error occurred while sending the email" });
+            res.status(500).json({ error: "An error occurred while sending the email" });
         } else {
             console.log("Email sent:", info.response);
             res.status(200).json(otp);
@@ -149,4 +153,4 @@ const sendOtpEmail = async (req, res) => {
 
 
 //forgetPassword
-module.exports = { signUpController, loginController, verifyEmail, passwordChange };
+module.exports = { signUpController, loginController, verifyEmail, passwordChange, sendOtpEmail };

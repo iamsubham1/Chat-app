@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { body } = require('express-validator');
-const { loginController, signUpController, verifyEmail, passwordChange } = require('../controllers/authController');
+const { loginController, signUpController, verifyEmail, passwordChange, sendOtpEmail } = require('../controllers/authController');
 
 require('dotenv').config({ path: '.env' });
 
@@ -23,5 +23,7 @@ router.post('/login', [
 router.post('/verifyEmail', verifyEmail);
 
 router.post('/changePassword', passwordChange);
+
+router.post('/sendOTP', sendOtpEmail);
 
 module.exports = router
