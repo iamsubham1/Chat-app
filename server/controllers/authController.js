@@ -4,17 +4,20 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserSchema");
 const nodemailer = require("nodemailer");
+const otpGenerator = require("otp-generator");
+
+require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
     host: "smtp.forwardemail.net",
     port: 465,
     secure: true,
     auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-        user: "REPLACE-WITH-YOUR-ALIAS@YOURDOMAIN.COM",
-        pass: "REPLACE-WITH-YOUR-GENERATED-PASSWORD",
+        user: process.env.EMAIL,
+        pass: process.env.EmailPassword
     },
 });
+
 //signup (tested and works) (used in client)
 const signUpController = async (req, res) => {
     try {
@@ -114,6 +117,32 @@ const passwordChange = async (req, res) => {
 
 
 const sendOtpEmail = async (req, res) => {
+    // Generate OTP
+    const otp = otpGenerator.generate(4, {
+        digits: true,
+        alphabets: false,
+        upperCase: false,
+        specialChars: false,
+    });
+    const mailOptions = {
+        from: `NetTeam Support <${process.env.EMAIL}>`,
+        to: email,
+        subject: "Email Verification",
+        text: `Your OTP is: ${otp}`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log("Error:", error);
+            res
+                .status(500)
+                .json({ error: "An error occurred while sending the email" });
+        } else {
+            console.log("Email sent:", info.response);
+            res.status(200).json(otp);
+        }
+    });
 
 }
 
