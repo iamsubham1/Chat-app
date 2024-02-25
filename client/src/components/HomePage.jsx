@@ -253,7 +253,7 @@ const HomePage = () => {
             setKeyword("");
             fetchSearchResults();
         }
-    }, []);
+    }, [keyword]);
 
 
     useEffect(() => {

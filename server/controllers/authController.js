@@ -4,17 +4,21 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserSchema");
 const nodemailer = require("nodemailer");
-const otpGenerator = require("otp-generator");
+const { generateUniqueOTP
+} = require("../utility/generateOTP");
 
 require('dotenv').config();
 
+var otp;
 const transporter = nodemailer.createTransport({
-    host: "smtp.mailgun.org",
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-        user: process.env.USER,
-        pass: process.env.PASSWORD
+
+        user: 'myworkemail.subham@gmail.com',
+        pass: "vwwj dtms hmtp yomt"
     },
 });
 
@@ -117,24 +121,32 @@ const passwordChange = async (req, res) => {
 
 
 const sendOtpEmail = async (req, res) => {
-
-    const otp = otpGenerator.generate(4, {
-        digits: true,
-        alphabets: false,
-        upperCase: false,
-        specialChars: false,
-    });
-
-
+    otp = generateUniqueOTP(); // Assuming generateOTP is a function that generates OTP
     const { email } = req.body;
-
-    // Generate OTP
 
     const mailOptions = {
         from: `.Connect_support <${process.env.EMAIL}>`,
         to: email,
         subject: "Email Verification",
-        text: `Your OTP is: ${otp}`,
+        html: `
+            <div style="font-family: Helvetica, Arial, sans-serif; min-width: 1000px; overflow: auto; line-height: 2">
+              <div style="margin: 50px auto; width: 70%; padding: 20px 0">
+                <div style="border-bottom: 1px solid #eee">
+                  <a href="" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600">Connect Messaging app</a>
+                </div>
+                <p style="font-size: 1.1em">Hi,</p>
+                <p>Thank you for choosing Connect Messaging app. Use the following OTP to complete your Sign Up procedures. OTP is valid for 5 minutes</p>
+                <h2 style="background: #00466a; margin: 0 auto; width: max-content; padding: 0 10px; color: #fff; border-radius: 4px;">${otp}</h2>
+                <p style="font-size: 0.9em;">Regards,<br />Connect Messaging app</p>
+                <hr style="border: none; border-top: 1px solid #eee" />
+                <div style="float: right; padding: 8px 0; color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300">
+                  <p>Connect Messaging app LTD</p>
+                  <p>Odisha</p>
+                  <p>India</p>
+                </div>
+              </div>
+            </div>
+        `
     };
 
     // Send the email
@@ -142,15 +154,28 @@ const sendOtpEmail = async (req, res) => {
         if (error) {
             console.log("Error:", error);
             res.status(500).json({ error: "An error occurred while sending the email" });
+
+
         } else {
             console.log("Email sent:", info.response);
-            res.status(200).json(otp);
+            res.status(200).json("OTP SENT Successfully");
+            sentotp = otp;
+            console.log(sentotp);
         }
     });
-
 }
 
 
+const verifyOtp = async (req, res) => {
+    const { receivedOtp } = req.body;
+    console.log(receivedOtp, otp);
+    if (receivedOtp == otp) {
+        res.status(200).json("yes it works");
+    } else {
+        res.status(400).json("no it doesnt work");
+    }
+}
+
 
 //forgetPassword
-module.exports = { signUpController, loginController, verifyEmail, passwordChange, sendOtpEmail };
+module.exports = { signUpController, loginController, verifyEmail, passwordChange, sendOtpEmail, verifyOtp };
