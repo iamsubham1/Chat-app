@@ -17,8 +17,8 @@ const transporter = nodemailer.createTransport({
     secure: true,
     auth: {
 
-        user: 'myworkemail.subham@gmail.com',
-        pass: "vwwj dtms hmtp yomt"
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
     },
 });
 
