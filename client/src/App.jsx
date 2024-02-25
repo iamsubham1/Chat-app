@@ -5,7 +5,6 @@ import ProfilePage from './components/ProfilePage';
 import Login from './components/Login';
 import Signup from './components/SignUp';
 import ResetPasswordPage from './components/ResetPasswordPage';
-import PasswordChange from './components/PasswordChnage';
 
 
 
@@ -19,7 +18,6 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/resetpassword' element={<ResetPasswordPage />} />
-        <Route path='/changePassword' element={<PasswordChange />} />
 
       </Routes>
     </Router>

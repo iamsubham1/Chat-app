@@ -170,3 +170,51 @@ export const chatInfo = async (token, chatId) => {
         throw error;
     }
 }
+
+export const sentotp = async (email) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/sendOTP`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+            body: JSON.stringify({
+                email: email,
+
+            }),
+        })
+        if (!response.ok) {
+            console.error('Network response was not ok');
+            throw new Error('Network response was not ok');
+        } return response.json();
+
+    } catch (error) {
+        console.error('Error sending message:', error.message);
+        return false;
+    }
+}
+
+export const verifyOtp = async (otp) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verifyOtp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+            body: JSON.stringify({
+                receivedOtp: otp,
+
+            }),
+        })
+        if (!response.ok) {
+            console.error('Network response was not ok');
+            throw new Error('Network response was not ok');
+        } return response.json();
+
+    } catch (error) {
+        console.error('Error sending message:', error.message);
+        return false;
+    }
+}
