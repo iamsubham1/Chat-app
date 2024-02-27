@@ -58,7 +58,7 @@ const ResetPasswordPage = () => {
 
     return (
         <>
-            {OTPsent ? <VerifyOTP /> : <div className="h-screen flex  font-semibold font-poppins signup blackBg">
+            {OTPsent ? <VerifyOTP email={formData} /> : <div className="h-screen flex  font-semibold font-poppins signup blackBg">
 
                 <div className='w-full h-[90%] grid place-items-center'>
                     <div className="bg-[#0000005d] p-8 rounded shadow-md w-full sm:w-96 z-10 ">

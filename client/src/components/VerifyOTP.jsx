@@ -5,14 +5,14 @@ import {
 } from '../apis/api';
 
 import PasswordChange from './PasswordChange';
-const VerifyOTP = () => {
+const VerifyOTP = (email) => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState('');
     const [otpVerified, setotpVerified] = useState(false);
 
 
-
+    console.log(email);
     const handleChange = (e) => {
         setFormData(e.target.value);
         console.log(formData)
