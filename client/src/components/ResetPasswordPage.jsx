@@ -13,6 +13,7 @@ const ResetPasswordPage = () => {
 
     const [OTPsent, setOTPsent] = useState();
     const [formData, setFormData] = useState('');
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -24,6 +25,7 @@ const ResetPasswordPage = () => {
 
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
         try {
             const response = await fetch('http://localhost:8080/api/auth/verifyEmail', {
@@ -55,6 +57,9 @@ const ResetPasswordPage = () => {
             console.error('Network error:', error);
         }
     };
+
+
+
 
     return (
         <>

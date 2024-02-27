@@ -11,6 +11,7 @@ const VerifyOTP = (email) => {
     const [formData, setFormData] = useState('');
     const [otpVerified, setotpVerified] = useState(false);
 
+    const [loading, setloading] = useState(false);
 
     console.log(email);
     const handleChange = (e) => {
@@ -19,19 +20,36 @@ const VerifyOTP = (email) => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const checkOtp = await verifyOtp(formData);
-        if (checkOtp) {
-            setotpVerified(true);
-            alert("it works");
-        } else {
-            alert("something is wrong")
+
+        try {
+            setloading(true);
+            e.preventDefault();
+            const checkOtp = await verifyOtp(formData);
+            if (checkOtp) {
+                setotpVerified(true);
+                alert("otp verified");
+            } else {
+                alert("something is wrong")
+            }
+
+        } catch (error) {
+            console.error('Network error:', error);
+        } finally {
+            setloading(false);
         }
 
     }
+
+    if (loading) {
+        return (<div className="spinner-border" role="status" id='spinner'>
+            <span className="visually-hidden">Loading...</span>
+        </div>)
+    }
+
+
     return (
         <>
-            {otpVerified ? <PasswordChange /> : <div className="h-screen flex  font-semibold font-poppins signup blackBg">
+            {otpVerified ? <PasswordChange email={email} /> : <div className="h-screen flex  font-semibold font-poppins signup blackBg">
                 <div className='w-full h-[90%] grid place-items-center'>
                     <div className="bg-[#0000005d] p-8 rounded shadow-md w-full sm:w-96 z-10 ">
                         <h2 className="text-4xl font-semibold mb-4 text-[rgba(125,74,180,1)]">Verify OTP</h2>

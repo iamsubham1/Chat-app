@@ -107,8 +107,17 @@ const verifyEmail = async (req, res) => {
 
 const passwordChange = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const updatePassword = await User.updateOne({ email }, { password });
+
+        const email = (req.body.email.email);
+        console.log(email);
+        const salt = await bcrypt.genSalt(10);
+
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        console.log(hashedPassword);
+
+        const updatePassword = await User.updateOne({ email }, { password: hashedPassword });
+
         if (updatePassword) {
             res.status(200).json({ message: "Password changed successfully" });
         } else {

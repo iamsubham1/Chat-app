@@ -60,7 +60,6 @@ const HomePage = () => {
     };
 
     const handleVideoEnd = () => {
-        // Callback when the video has ended
 
         setShowStatus(false);
 
@@ -397,6 +396,8 @@ const HomePage = () => {
 
 
     }, [chatDetails, selectedChatId, allChats]);
+
+
     if (loading) {
         return (<div className="spinner-border" role="status" id='spinner'>
             <span className="visually-hidden">Loading...</span>

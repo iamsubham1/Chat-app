@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const PasswordChange = (email) => {
 
 
-const PasswordChange = () => {
-
+    const navigate = useNavigate();
     const [formData, setFormData] = useState('');
 
+    console.log("propemailis :", email)
     const handleChange = (e) => {
         setFormData(e.target.value);
         console.log(formData);
@@ -12,9 +15,37 @@ const PasswordChange = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("okay");
+        try {
+            const response = await fetch("http://localhost:8080/api/auth/changePassword", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+
+                },
+                body: JSON.stringify({
+                    password: formData,
+                    email: email.email.email,
+
+                }),
+            })
+            if (response.ok) {
+                alert("password changed sucessfully");
+                navigate('/login');
+
+            }
+            else {
+                alert("something wrong happened");
+                console.log(response);
+
+                navigate('/resetpassword')
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+        }
+
 
     }
+
 
     return (
         <div className="h-screen flex  font-semibold font-poppins signup blackBg">
@@ -27,12 +58,13 @@ const PasswordChange = () => {
                             <input
                                 type="text"
                                 id="receivedOtp"
-                                name="receivedOtp"
-                                value={formData.receivedOtp}
+                                name="password"
+                                value={formData.password}
                                 onChange={handleChange}
                                 placeholder="Enter New Password"
                                 className="mt-1 p-2 w-full rounded-md border-2 focus:outline-none focus:border-blue-500 bg-transparent text-white focus:bg-transparent"
                             />
+
                         </div>
 
 
