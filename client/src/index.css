@@ -287,10 +287,6 @@ border: 2px solid rgba(255, 255, 255, 0);
   font-size: 15px;
 }
 
-
-
-
-
 #btn{
   display: flex;
   justify-content: center;
@@ -343,20 +339,14 @@ color:#E7E9EB;
   font-family: poppins;
 }
 
-
-
 .prop{
   display: flex;
   align-items: center;
 }
 
-
 .padding{
   padding: 0;
 }
-
-
-
 
 .gradient{
   width: 45px;
@@ -370,27 +360,16 @@ color:#E7E9EB;
   position: fixed;
   top: 50%;
   left: 50%;
-
   z-index: 11;
-  border: 5px solid transparent;
-  border-top: 5px solid #A3D4FE; 
   border-radius: 50%;
   width: 50px;
   height: 50px;
-  animation: spin 1s linear infinite, changeColor 4s ease-in-out infinite; 
+  border-top: 5px solid red;
+  animation: spin 1s linear infinite; 
 }
 
 @keyframes spin {
-  to {
+  100% {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes changeColor {
-  0%, 100% {
-    border-top-color: #A3D4FE;
-  }
-  50% {
-    border-top-color: #0632d5; /* Change to desired color */
   }
 }

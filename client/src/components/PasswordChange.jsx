@@ -6,6 +6,7 @@ const PasswordChange = (email) => {
 
     const navigate = useNavigate();
     const [formData, setFormData] = useState('');
+    const [loading, setloading] = useState(false);
 
     console.log("propemailis :", email)
     const handleChange = (e) => {
@@ -16,6 +17,7 @@ const PasswordChange = (email) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            setloading(true);
             const response = await fetch("http://localhost:8080/api/auth/changePassword", {
                 method: 'POST',
                 headers: {
@@ -41,11 +43,18 @@ const PasswordChange = (email) => {
             }
         } catch (error) {
             console.error('Network error:', error);
+        } finally {
+            setloading(false);
         }
 
 
     }
-
+    if (loading) {
+        return (
+            <div className="w-[100vw] h-[100vh] bg-black"><div className="spinner-border" role="status" id='spinner'>
+                <span className="visually-hidden">Loading...</span>
+            </div></div>)
+    }
 
     return (
         <div className="h-screen flex  font-semibold font-poppins signup blackBg">
