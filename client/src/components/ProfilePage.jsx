@@ -145,6 +145,12 @@ const ProfilePage = () => {
         getActiveUserDetails()
 
     }, [isuploading]);
+    if (isuploading) {
+        return (
+            <div className="w-[100vw] h-[100vh] bg-black"><div className="spinner-border" role="status" id='spinner'>
+                <span className="visually-hidden">Loading...</span>
+            </div></div>)
+    }
 
     return (
         <>
