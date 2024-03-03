@@ -1,5 +1,6 @@
 const User = require('../models/UserSchema')
 const multer = require('multer')
+const Chat = require("../models/chatSchema");
 const { getPublicID } = require('../utility/getPublicId')
 const upload = multer({ dest: 'uploads/' })
 const cloudinary = require('cloudinary').v2;
@@ -8,9 +9,11 @@ const sharp = require('sharp');
 const { Readable } = require('stream');
 const fs = require("fs");
 
-const cloud_name = process.env.cloud_name
-const api_key = process.env.api_key
-const api_secret = process.env.api_secret
+const cloud_name = process.env.cloud_name;
+const api_key = process.env.api_key;
+const api_secret = process.env.api_secret;
+
+
 //cloudinary config
 cloudinary.config({
     cloud_name: cloud_name,
@@ -18,10 +21,9 @@ cloudinary.config({
     api_secret: api_secret
 });
 
+
+
 //current user profile info (used in client)
-
-
-
 const currentUserDetails = async (req, res) => {
     try {
         const currentUser = req.user; //got the user info
@@ -109,6 +111,7 @@ const deleteUser = async (req, res) => {
     }
 }
 
+//upload profile picture
 const uploadImage = async (req, res) => {
     try {
         upload.single('image')(req, res, async (err) => {
@@ -206,6 +209,109 @@ const uploadImage = async (req, res) => {
     }
 }
 
+//group Pic upload
+const uploadGroupPic = async (req, res) => {
+    try {
+
+
+        const chatId = req.body;
+
+        upload.single('image')(req, res, async (err) => {
+            if (err) {
+                console.error('Multer error', err); if (err instanceof multer.MulterError) {
+                    if (err.code === 'LIMIT_FILE_SIZE') {
+                        return res.status(400).json({ message: 'File size exceeds the limit' });
+                    }
+                    return res.status(500).json({ message: 'Multer error: ' + err.message });
+                } else {
+                    return res.status(500).json({ message: 'Internal server error: ' + err.message });
+                }
+
+            }
+
+            const userId = await req.user.user._id;
+
+            console.log(userId);
+
+            const chatData = await Chat.findById(chatId);
+            if (!chatData) {
+                return res.status(404).json({ message: 'chat not found' });
+            }
+            const inputPath = req.file.path;
+            if (chatData.groupPic) {
+                const cloudinaryUrl = chatData.profilePic;
+                const publicId = await getPublicID(cloudinaryUrl);
+                console.log('Existing profile pic found. Public ID:', publicId);
+
+                if (publicId) {
+                    try {
+                        const deletionResult = await cloudinary.uploader.destroy(publicId);
+                        console.log('Existing photo deleted from Cloudinary successfully:', deletionResult);
+
+                    } catch (error) {
+                        console.error(`Error deleting existing photo from Cloudinary: ${error}`);
+
+                    }
+                }
+
+            } console.log('upload started');
+
+            const transformedImageBuffer = await sharp(inputPath)
+                .resize(300, 300)
+                .toFormat('jpeg')
+                .rotate(0)
+                .toBuffer();
+
+            console.log('Image processing complete. Uploading to Cloudinary...');
+            const uploadStream = cloudinary.uploader.upload_stream({ resource_type: 'image' }, async (uploadError, result) => {
+                if (uploadError) {
+                    console.error(`Error uploading to Cloudinary: ${uploadError}`);
+                    return res.status(500).json({ message: 'Error uploading photo' });
+                }
+
+                console.log('Upload to Cloudinary successful. Updating user profile picture URL...');
+
+                // Update user's profile picture URL in the userSchema
+                await Chat.findOneAndUpdate(
+                    userId,
+                    { profilePic: result.secure_url }
+                );
+
+                console.log('User profile picture URL updated. Responding with success.');
+
+                // Respond with success
+                res.status(201).json({ message: 'Photo uploaded successfully' });
+
+                // Delete temporary file after a successful upload
+                try {
+                    console.log('Deleting temporary file:', inputPath);
+                    fs.unlink(inputPath, (unlinkError) => {
+                        if (unlinkError) {
+                            console.error(`Error deleting file: ${unlinkError}`);
+                        } else {
+                            console.log('Temporary file deleted successfully');
+                        }
+                    });
+                } catch (unlinkError) {
+                    console.error(`Error deleting file: ${unlinkError}`);
+                }
+            });
+
+            // Pipe the transformedImageBuffer directly to the uploadStream
+            const transformedImageStream = new Readable();
+            transformedImageStream.push(transformedImageBuffer);
+            transformedImageStream.push(null);
+            transformedImageStream.pipe(uploadStream);
+        });
+
+
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Error handling photo upload' });
+    }
+}
+
+//upload status 
 const uploadVideo = async (req, res) => {
     try {
         upload.single('video')(req, res, async () => {
