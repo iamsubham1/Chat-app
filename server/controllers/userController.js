@@ -212,9 +212,8 @@ const uploadImage = async (req, res) => {
 //group Pic upload
 const uploadGroupPic = async (req, res) => {
     try {
-
-
-        const chatId = req.body;
+        const chatId = req.params;
+        console.log(chatId.id);
 
         upload.single('image')(req, res, async (err) => {
             if (err) {
@@ -231,15 +230,16 @@ const uploadGroupPic = async (req, res) => {
 
             const userId = await req.user.user._id;
 
+
             console.log(userId);
 
-            const chatData = await Chat.findById(chatId);
+            const chatData = await Chat.findById(chatId.id);
             if (!chatData) {
-                return res.status(404).json({ message: 'chat not found' });
+                return res.status(404).json({ message: 'chat not found or user is not admin' });
             }
             const inputPath = req.file.path;
             if (chatData.groupPic) {
-                const cloudinaryUrl = chatData.profilePic;
+                const cloudinaryUrl = chatData.groupPic;
                 const publicId = await getPublicID(cloudinaryUrl);
                 console.log('Existing profile pic found. Public ID:', publicId);
 
@@ -271,13 +271,13 @@ const uploadGroupPic = async (req, res) => {
 
                 console.log('Upload to Cloudinary successful. Updating user profile picture URL...');
 
-                // Update user's profile picture URL in the userSchema
-                await Chat.findOneAndUpdate(
-                    userId,
-                    { profilePic: result.secure_url }
+                // Update group's profile picture URL in the userSchema
+                await Chat.findByIdAndUpdate(
+                    chatId.id,
+                    { groupPic: result.secure_url }
                 );
 
-                console.log('User profile picture URL updated. Responding with success.');
+                console.log('group profile picture URL updated. Responding with success.');
 
                 // Respond with success
                 res.status(201).json({ message: 'Photo uploaded successfully' });
@@ -355,4 +355,4 @@ const uploadVideo = async (req, res) => {
 };
 
 
-module.exports = { currentUserDetails, findUserById, searchUser, editUser, deleteUser, uploadImage, uploadVideo };
+module.exports = { currentUserDetails, findUserById, searchUser, editUser, deleteUser, uploadImage, uploadVideo, uploadGroupPic };
