@@ -4,6 +4,7 @@ import { getUserInfoById, chatInfo } from '../apis/api';
 import defaultUserImage from '../assets/user.png';
 import EditGroupModal from './EditGroupModal';
 import { IoClose } from "react-icons/io5";
+import { MdEdit } from "react-icons/md";
 
 const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, fetchAllChats }) => {
 
@@ -153,6 +154,8 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
 
                         {chatData.groupAdmin === user._id ? <div id="btn">
                             <button className="msg text-black" onClick={openEditGroupModal}>Edit Group</button>
+                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute top-[40%] left-[53%] text-xl' />
+
 
                         </div> : ""}
 

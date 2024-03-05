@@ -189,7 +189,7 @@ const EditGroupModal = ({ isOpen, closeModal, selectedChatId, token, chatData, g
                 <h1 className='text-center'>Edit group</h1>
                 <div className='main-section grid'>
                     <div className='GroupNameSection text-center  capitalize text-[#A47FCC]'>    {isEditing ? (
-                        // Render input field and button when editing
+
                         <div className='prop justify-center p-2 gap-4'>
                             <input
                                 type="text"
