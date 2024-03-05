@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Modal from 'react-modal';
 import { getUserInfoById, chatInfo } from '../apis/api';
 import defaultUserImage from '../assets/user.png';
@@ -7,6 +7,7 @@ import { IoClose } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 
 const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, fetchAllChats }) => {
+    const fileInputRef = useRef(null);
 
     const [chatData, setChatData] = useState('');
     const [receiverData, setReceiverData] = useState('');
@@ -29,26 +30,18 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
         }
     };
 
-    const participants = chatData.participants || [];
-    // console.log("participants :", participants)`
 
 
     //set the requirements to get member or individual receiver details
+    const participants = chatData.participants || [];
     if (chatData.isGroupChat) {
         individualReceiverId = null;
         displayName = chatData.chatName || null;
     } else {
         // For one-on-one chat find the participant other than the active user.
-
-
         individualReceiverId = participants.find(participant => participant !== user._id);
-
-
-
-        // console.log("receiverId", receiverId, "active user", user._id)
     }
 
-    // console.log(receiverId);
 
     const receiverDetails = async () => {
         try {
@@ -103,7 +96,13 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
     const closeEditModal = () => {
         setIsModalOpen(false);
     };
+    const handleUpload = () => {
+        fileInputRef.current.click();
+    }
 
+    const uploadGroupPic = () => {
+
+    }
     return (
         <Modal
             isOpen={isOpen}
@@ -154,7 +153,18 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
 
                         {chatData.groupAdmin === user._id ? <div id="btn">
                             <button className="msg text-black" onClick={openEditGroupModal}>Edit Group</button>
-                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute top-[40%] left-[53%] text-xl' />
+                            <form encType="multipart/form-data" method='post' >
+
+
+                                <input
+                                    type='file'
+                                    id='picInput'
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
+                            </form>
+                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute top-[40%] left-[53%] text-xl' onClick={uploadGroupPic} />
 
 
                         </div> : ""}
