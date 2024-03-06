@@ -9,7 +9,7 @@ const { generateUniqueOTP
 
 require('dotenv').config();
 
-var otp, intOTP;
+var otp;
 const transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
