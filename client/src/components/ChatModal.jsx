@@ -4,8 +4,7 @@ import { getUserInfoById, chatInfo } from '../apis/api';
 import defaultUserImage from '../assets/user.png';
 import EditGroupModal from './EditGroupModal';
 import { IoClose } from "react-icons/io5";
-import { MdEdit } from "react-icons/md";
-
+import { IoCamera } from "react-icons/io5";
 const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, fetchAllChats }) => {
     const fileInputRef = useRef(null);
 
@@ -13,6 +12,8 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
     const [receiverData, setReceiverData] = useState('');
     const [groupMembers, setGroupMembers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isuploading, setIsuploading] = useState(false);
+
     let individualReceiverId;
     let displayName;
 
@@ -89,6 +90,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
 
     }, [isOpen]);
 
+
     const openEditGroupModal = () => {
         setIsModalOpen(true);
     };
@@ -100,9 +102,58 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
         fileInputRef.current.click();
     }
 
-    const uploadGroupPic = () => {
+    const handleFileChange = async (event) => {
+        const file = event.target.files && event.target.files[0];
 
+        try {
+            setIsuploading(true);
+            console.log('File selected:', file);
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            console.log('Sending file to server...');
+            const response = await fetch(`http://localhost:8080/api/user/uploadGroupPic/${selectedChatId}`, {
+                method: 'POST',
+                headers: {
+                    'JWT': token,
+                },
+                credentials: 'include',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Error uploading file');
+            }
+
+            console.log('File upload successful. Retrieving response data...');
+            const data = await response.json();
+            console.log('File uploaded successfully:', data);
+
+            console.log('Updating profile picture key...');
+
+
+
+        } catch (error) {
+            console.error('Error:', error.message);
+        } finally {
+            console.log('File upload process completed.');
+            setIsuploading(false);
+            fetchChatDetails();
+            fetchAllChats();
+
+        }
+    };
+
+
+    if (isuploading) {
+        return (
+
+            <div className="spinner-border" role="status" id='spinner'>
+                <span className="visually-hidden">Loading...</span>
+            </div>)
     }
+
     return (
         <Modal
             isOpen={isOpen}
@@ -164,7 +215,9 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
                                     onChange={handleFileChange}
                                 />
                             </form>
-                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute top-[40%] left-[53%] text-xl' onClick={uploadGroupPic} />
+                            <div className=' p-1 absolute top-[37%] left-[52%] bg-[#dadadac7] rounded-full justify-center'>
+                                <IoCamera className='hover:text-[#000000] hover:cursor-pointer text-[#4d4d4d]  text-xl' onClick={handleUpload} />
+                            </div>
 
 
                         </div> : ""}
@@ -176,6 +229,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
             </div>
             <EditGroupModal isOpen={isModalOpen} closeModal={closeEditModal} selectedChatId={selectedChatId} token={token} groupMembers={groupMembers} chatData={chatData} reloadInfoAfteredit={reloadInfoAfteredit} />
         </Modal>
+
     );
 };
 export default ChatModalComponent;
