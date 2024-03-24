@@ -207,7 +207,7 @@ const HomePage = () => {
             formData.append('video', file);
 
             console.log('Sending file to server...');
-            const response = await fetch('http://localhost:8080/api/user/uploadVideo', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/user/uploadVideo', {
                 method: 'POST',
                 headers: {
                     'JWT': token,
@@ -364,7 +364,7 @@ const HomePage = () => {
     const deleteChat = async (chatId) => {
         console.log('btn clicked')
         try {
-            const response = await fetch(`http://localhost:8080/api/chat/deleteChat/${chatId}`, {
+            const response = await fetch(`https://chat-app-vzjv.onrender.com/api/chat/deleteChat/${chatId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

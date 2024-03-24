@@ -1,5 +1,5 @@
 // api.js
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'https://chat-app-vzjv.onrender.com';
 
 export const getAllChats = async (token) => {
     try {
@@ -127,7 +127,7 @@ export const getUserInfoById = async (token, userId) => {
 export const createGroup = async (token, chatName, participants) => {
 
     try {
-        const response = await fetch('http://localhost:8080/api/chat/createGroup', {
+        const response = await fetch(`${API_BASE_URL}/api/chat/createGroup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

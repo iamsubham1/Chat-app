@@ -16,7 +16,7 @@ const PasswordChange = (email) => {
         e.preventDefault();
         try {
             setloading(true);
-            const response = await fetch("http://localhost:8080/api/auth/changePassword", {
+            const response = await fetch("https://chat-app-vzjv.onrender.com/api/auth/changePassword", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

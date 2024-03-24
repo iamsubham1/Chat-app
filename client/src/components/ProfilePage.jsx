@@ -44,7 +44,7 @@ const ProfilePage = () => {
             formData.append('image', file);
 
             console.log('Sending file to server...');
-            const response = await fetch('http://localhost:8080/api/user/uploadImg', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/user/uploadImg', {
                 method: 'POST',
                 headers: {
                     'JWT': token,
@@ -99,7 +99,7 @@ const ProfilePage = () => {
     const handleEdit = async () => {
         console.log("user id is : ", activeUserDetails._id)
         try {
-            const response = await fetch(`http://localhost:8080/api/user/edit/${activeUserDetails._id}`, {
+            const response = await fetch(`https://chat-app-vzjv.onrender.com/api/user/edit/${activeUserDetails._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

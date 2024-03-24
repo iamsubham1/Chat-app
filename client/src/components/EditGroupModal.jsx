@@ -78,7 +78,7 @@ const EditGroupModal = ({ isOpen, closeModal, selectedChatId, token, chatData, g
 
     const addParticipants = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/chat/addparticipants', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/chat/addparticipants', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const EditGroupModal = ({ isOpen, closeModal, selectedChatId, token, chatData, g
 
     const handleDeleteMember = async (memberid) => {
         try {
-            const response = await fetch('http://localhost:8080/api/chat/removeParticipants', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/chat/removeParticipants', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const EditGroupModal = ({ isOpen, closeModal, selectedChatId, token, chatData, g
     const handleSaveClick = async (editedChatName) => {
         try {
 
-            const response = await fetch('http://localhost:8080/api/chat/renameGroup', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/chat/renameGroup', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
