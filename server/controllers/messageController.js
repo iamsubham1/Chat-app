@@ -1,5 +1,5 @@
 const Chat = require("../models/chatSchema");
-const Message = require("../models/MessageSchema");
+const Message = require("../models/messageSchema");
 
 //tested and works (used in client)
 const createMessage = async (req, res) => {
