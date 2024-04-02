@@ -80,7 +80,7 @@ const HomePage = () => {
                 fetchMessages(createdChatId);
             }
         } else {
-            // Handle the selection of an existing chat (e.g., fetch chat details)
+         
             setSelectedChatId(chatId);
             fetchMessages(chatId);
 
@@ -132,7 +132,7 @@ const HomePage = () => {
             if (data && data._id) {
                 console.log('New chat created with chat ID:', data._id);
 
-                // Update the state or perform any necessary actions
+               
 
                 setAllChats([...allChats, data]);
                 setSelectedChatId(data._id);
