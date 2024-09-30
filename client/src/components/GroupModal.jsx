@@ -104,12 +104,12 @@ const GroupModalComponent = ({ isOpen, closeModal }) => {
         <Modal
             isOpen={isOpen}
             onRequestClose={closeModal}
-            className='flex flex-col max-h-[full] max-w-lg w-full bg-[#3C1C63] rounded-lg mt-auto mb-auto p-6 highest'
+            className='flex flex-col max-h-[full] max-w-lg w-full bg-[#3C1C63] rounded-lg mt-auto mb-auto p-6 '
             overlayClassName="overlay"
         >
             <h2 className="text-white text-2xl font-bold mb-4 text-center">Create group</h2>
 
-            <div className='flex flex-col'>
+            <div className='flex flex-col '>
                 <input
                     type="text"
                     placeholder="Group Name"

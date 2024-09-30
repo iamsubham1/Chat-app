@@ -521,82 +521,75 @@ const HomePage = () => {
                                 </button>
                             </div>
 
-                            <div className="messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-[10]">
+                            <div className="messagesContainer h-[90%]  p-4 overflow-y-auto overflow-x-hidden z-[10]  custom-scrollbar">
                                 {selectedChatId ? (
                                     chatDetails && chatDetails.length > 0 ? (
-                                        <div>
-                                            {chatDetails.map((message, index) => (
-                                                <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
-                                                    <div className="flex items-center">
-                                                        {message.sender._id !== userInfo._id && (
-                                                            <img
-                                                                src={message.sender.profilePic || defaultUserImage}
-                                                                alt="Receiver"
-                                                                className="w-8 h-8 rounded-full mr-2"
-                                                            />
-                                                        )}
-                                                        <div className={`p-2 rounded-md ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
-                                                            <p>{message.content}</p>
+                                        <div className="flex flex-col flex-1 gap-5 overflow-y-scroll  custom-scrollbar ">
+                                            {/* Messages Area */}
+                                            <div className="flex-1 overflow-y-auto rounded-lg p-4 custom-scrollbar">
+                                                {chatDetails.map((message, index) => (
+                                                    <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                        <div className="flex items-center">
+                                                            {message.sender._id !== userInfo._id && (
+                                                                <img
+                                                                    src={message.sender.profilePic || defaultUserImage}
+                                                                    alt="Receiver"
+                                                                    className="w-8 h-8 rounded-full mr-2"
+                                                                />
+                                                            )}
+                                                            <div className={`p-2 rounded-md ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
+                                                                <p>{message.content}</p>
+                                                            </div>
+                                                            {message.sender._id === userInfo._id && (
+                                                                <img
+                                                                    src={message.sender.profilePic || defaultUserImage}
+                                                                    alt="Sender"
+                                                                    className="w-8 h-8 rounded-full ml-2"
+                                                                />
+                                                            )}
                                                         </div>
-                                                        {message.sender._id === userInfo._id && (
-                                                            <img
-                                                                src={message.sender.profilePic || defaultUserImage}
-                                                                alt="Sender"
-                                                                className="w-8 h-8 rounded-full ml-2"
-                                                            />
-                                                        )}
                                                     </div>
-                                                </div>
-                                            ))}
-                                            {/* Message input bar */}
-                                            <div className="bottom-5 absolute right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center">
-                                                <input
-                                                    className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black min-h-[35px]"
-                                                    type="text"
-                                                    placeholder="Type your message..."
-                                                    onChange={(e) => setMessageContent(e.target.value)}
-                                                    onFocus={() => setIsTyping(true)}
-                                                    onBlur={() => setIsTyping(false)}
-                                                    value={messageContent}
-                                                />
-                                                <IoMdSend
-                                                    onClick={handleSendMessage}
-                                                    className="ml-5 hover:text-[#9678FF] text-2xl cursor-pointer"
-                                                />
+                                                ))}
+                                                {/* Show typing indicator */}
+                                                {showTyping && <TypingCard className="typingCard" />}
                                             </div>
-                                            {showTyping && <TypingCard className="typingCard" />}
-                                        </div>
-                                    ) : (<>
 
-                                        <div className="no-messages-message text-center text-white mt-4">
-                                            No messages in this chat
-                                        </div>
-                                        <div className="bottom-5 absolute right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center">
-                                            <input
-                                                className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black min-h-[35px]"
-                                                type="text"
-                                                placeholder="Type your message..."
-                                                onChange={(e) => setMessageContent(e.target.value)}
-                                                onFocus={() => setIsTyping(true)}
-                                                onBlur={() => setIsTyping(false)}
-                                                value={messageContent}
-                                            />
-                                            <IoMdSend
-                                                onClick={handleSendMessage}
-                                                className="ml-5 hover:text-[#9678FF] text-2xl cursor-pointer"
-                                            />
-                                        </div>
-                                    </>
+                                            {/* Input Area */}
 
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center flex-1">
+                                            <div className="no-messages-message text-center text-white mt-4">
+                                                No messages in this chat
+                                            </div>
+
+                                        </div>
                                     )
                                 ) : (
-                                    <div className="welcome-message text-white text-center mt-4 text-medium">
+                                    <div className="welcome-message text-white text-center mt-4 text-medium flex-1 flex flex-col items-center justify-center">
                                         <h1 className="text-2xl">
                                             Welcome to <span className="customText font-bold text-2xl">.CONNECT</span>
                                         </h1>
-                                        A Real-time Chat Application...!
+                                        <p>A Real-time Chat Application...!</p>
                                     </div>
                                 )}
+                            </div>
+
+                            <div className=" bg-[#454545aa] flex items-center z-[12] px-3 h-[50px] self-end">
+                                <input
+                                    className="border outline-none rounded-md flex-1 py-1 px-2 text-black"
+                                    type="text"
+                                    placeholder="Type your message..."
+                                    onChange={(e) => setMessageContent(e.target.value)}
+                                    onFocus={() => setIsTyping(true)}
+                                    onBlur={() => setIsTyping(false)}
+                                    value={messageContent}
+                                />
+                                <IoMdSend
+                                    onClick={handleSendMessage}
+                                    className="ml-5 hover:text-[#9678FF] text-2xl cursor-pointer"
+                                />
+
                             </div>
                         </>
                     ) : null}

@@ -13,16 +13,13 @@ const ProfilePage = () => {
     const token = getCookie('JWT');
     const navigate = useNavigate();
 
-
     const fileInputRef = useRef(null);
-
 
     const [activeUserDetails, setActiveUserDetails] = useState('');
     const [loading, setloading] = useState(false);
     const [editData, setEditData] = useState({
         name: '',
         about: ''
-
     });
 
     const [isEditing, setIsEditing] = useState(false);
@@ -37,11 +34,9 @@ const ProfilePage = () => {
         }
     };
 
-
     const handleUpload = () => {
         fileInputRef.current.click();
-    }
-
+    };
 
     const handleFileChange = async (event) => {
         const file = event.target.files && event.target.files[0];
@@ -67,31 +62,24 @@ const ProfilePage = () => {
                 throw new Error('Error uploading file');
             }
 
-            console.log('File upload successful. Retrieving response data...');
             const data = await response.json();
             console.log('File uploaded successfully:', data);
-
-            console.log('Updating profile picture key...');
-
 
             // window.location.reload();
         } catch (error) {
             console.error('Error:', error.message);
         } finally {
-            console.log('File upload process completed.');
             setloading(false);
         }
     };
 
-
     const handleInput = (e) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setEditData({
             ...editData,
             [name]: value,
-        })
-
-    }
+        });
+    };
 
     const openEditModal = () => {
         setEditData({
@@ -105,10 +93,8 @@ const ProfilePage = () => {
         setIsEditing(false);
     };
 
-
     const handleEdit = async (e) => {
         e.preventDefault();
-
 
         try {
             setloading(true);
@@ -116,7 +102,7 @@ const ProfilePage = () => {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'JWT': token
+                    'JWT': token,
                 },
                 body: JSON.stringify(editData),
                 credentials: 'include'
@@ -127,87 +113,70 @@ const ProfilePage = () => {
                 setActiveUserDetails(data);
 
                 closeEditModal();
-
-
-
             } else {
                 console.error("Unexpected status code:", response.status);
-                alert("something bad happened");
+                alert("Something bad happened");
             }
         } catch (error) {
             console.error('Network error:', error);
         } finally {
-            console.log('edited successfully');
             setloading(false);
         }
     };
 
-
-
-
     useEffect(() => {
-
         getActiveUserDetails();
-
-    }, [loading,]);
-
+    }, [loading]);
 
     if (loading) {
         return (
-            <div className="w-[100vw] h-[100vh] bg-black"><div className="spinner-border" role="status" id='spinner'>
-                <span className="visually-hidden">Loading...</span>
-            </div></div>)
+            <div className="w-full h-full bg-black flex items-center justify-center">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
     }
 
     return (
         <>
-            <div className="bg-[#121218] blackBg text-white p-8 h-[100VH] flex-col">
-                <button className='homeBtn text-white text-3xl hover:text-[#9678FF]'><IoHomeSharp onClick={() => {
-                    navigate('/')
-                }} />
+            <div className="bg-[#121218] text-white p-4 md:p-8 h-[100vh] flex flex-col items-center justify-center">
+                <button className="text-white text-3xl hover:text-[#9678FF] mb-6">
+                    <IoHomeSharp onClick={() => navigate('/')} />
                 </button>
-                <div id="algn">
-                    <div id="card">
-                        <div id="upper-bg" className='bg-red-600'>
-                            <img src={activeUserDetails && activeUserDetails.profilePic ? activeUserDetails.profilePic : defaultUserImage}
-                                alt="" className="profile-pic" />
-                            <form encType="multipart/form-data" method='post' >
+                <div className="w-full max-w-[300px] md:max-w-[400px] ">
+                    <div className="relative rounded-lg bg-black shadow-lg">
+                        <div className="relative bg-[#3C1C63] rounded-t-lg py-8 flex items-center justify-center">
+                            <img
+                                src={activeUserDetails?.profilePic || defaultUserImage}
+                                alt="Profile"
+                                className="w-32 h-32 rounded-full border-4 border-white"
+                                onClick={handleUpload}
+                            />
 
-
-                                <input
-                                    type='file'
-                                    id='picInput'
-                                    ref={fileInputRef}
-                                    style={{ display: 'none' }}
-                                    onChange={handleFileChange}
-                                />
-                            </form>
-                            <MdEdit className='hover:text-white hover:cursor-pointer text-[#4d4d4d] absolute bottom-1 right-[30%]' onClick={handleUpload} />
+                            <input
+                                type="file"
+                                id="picInput"
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange}
+                            />
                         </div>
-                        <div id="lower-bg">
-                            <div className="text text-2xl">
-                                <p className="name capitalize">{activeUserDetails ? activeUserDetails.name : "unknown"}</p>
-                                <p className="PhoneNumber text-xl">{activeUserDetails ? activeUserDetails.phoneNumber : "xxxxx - xxxxx"}</p>
-                            </div>
-                            <div id="icons">
-                                <h2 className='text-center text-[#A47FCC]'>{activeUserDetails ? activeUserDetails.about : ""}</h2>
-                            </div>
-                            <div id="btn">
-                                <button className="msg text-black" onClick={openEditModal}>Edit</button>
-
-                            </div>
-
-
+                        <div className="p-6 text-center">
+                            <p className="text-2xl font-semibold capitalize">{activeUserDetails?.name || "Unknown"}</p>
+                            <p className="text-xl">{activeUserDetails?.phoneNumber || "xxxxx - xxxxx"}</p>
+                            <p className="text-lg text-gray-400 mt-4">{activeUserDetails?.about || ""}</p>
+                            <button
+                                className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={openEditModal}
+                            >
+                                Edit Profile
+                            </button>
                         </div>
                     </div>
-
-
                 </div>
-
-
-
-
             </div>
+
             {/* Modal */}
             <Modal
                 isOpen={isEditing}
@@ -215,49 +184,48 @@ const ProfilePage = () => {
                 className="modal"
                 overlayClassName="overlay"
             >
-                <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-                <form className='editForm' onSubmit={handleEdit} >
-                    <label className="block mb-2 py-2">
-                        Name:
-                        <input
-                            className="w-full bg-[#000000] text-white  p-2 rounded customBorder"
-                            type="text"
-                            name='name'
-                            value={editData.name}
-                            onChange={handleInput}
-                        />
-                    </label>
+                <div className="w-full max-w-[95%] md:max-w-[50%] lg:max-w-[35%] mx-auto p-6 bg-[#222] text-white rounded-lg">
+                    <h2 className="text-2xl font-bold mb-4 text-center">Edit Profile</h2>
+                    <form className="editForm" onSubmit={handleEdit}>
+                        <label className="block mb-4">
+                            Name:
+                            <input
+                                className="w-full bg-[#000] text-white p-3 rounded mt-1"
+                                type="text"
+                                name="name"
+                                value={editData.name}
+                                onChange={handleInput}
+                            />
+                        </label>
 
+                        <label className="block mb-4">
+                            About:
+                            <textarea
+                                className="w-full bg-[#000] text-white p-3 rounded mt-1"
+                                name="about"
+                                value={editData.about}
+                                onChange={handleInput}
+                            />
+                        </label>
 
-                    <label className="block mb-2 py-2">
-                        About:
-                        <textarea
-                            className="w-full bg-[#000000] text-white  p-2 rounded customBorder"
-                            name='about'
-                            value={editData.about}
-                            onChange={handleInput}
-                        />
-                    </label>
-                    <div className="mt-4">
-                        <button
-                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
-                            type='submit'
-
-                        >
-                            Save Changes
-                        </button>
-                        <button
-                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-
-                            onClick={closeEditModal}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+                        <div className="mt-6 flex justify-between">
+                            <button
+                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto mr-2"
+                                type="submit"
+                            >
+                                Save Changes
+                            </button>
+                            <button
+                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+                                onClick={closeEditModal}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </Modal>
         </>
-
     );
 };
 
