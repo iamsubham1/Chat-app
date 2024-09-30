@@ -27,7 +27,7 @@ import TypingCard from './TypingCard';
 const socket = io('http://localhost:8080', {
     transports: ['websocket'],
 
-})
+});
 
 
 const HomePage = () => {
@@ -162,8 +162,11 @@ const HomePage = () => {
         }
     };
 
-    const fetchSearchResults = async () => {
+    const fetchSearchResults = async (keyword) => {
         try {
+            if (!keyword) {
+                return; // Exit if there's no keyword
+            }
             const data = await searchUsers(token, keyword);
             setSearchResults(data);
 
@@ -207,7 +210,7 @@ const HomePage = () => {
             formData.append('video', file);
 
             console.log('Sending file to server...');
-            const response = await fetch('https://chat-app-vzjv.onrender.com/api/user/uploadVideo', {
+            const response = await fetch('http://localhost:8080/api/user/uploadVideo', {
                 method: 'POST',
                 headers: {
                     'JWT': token,
@@ -239,18 +242,23 @@ const HomePage = () => {
         return timeB - timeA;
     });
 
+
+    console.log(sortedChats, "adasdasdsadasdasdsadasdsad");
+    console.log(searchResults, "adasdasd===============????????????????");
+
+
     const handleProfile = () => {
         navigate('/profile')
     }
 
 
     useEffect(() => {
-        if (keyword !== '') {
-            // If keyword is not empty, fetch search results
-            fetchSearchResults();
+        // Only fetch search results if keyword is not empty
+        if (keyword.trim() !== '') {
+            fetchSearchResults(keyword);
         } else {
-            setKeyword("");
-            fetchSearchResults();
+            // Clear search results or handle the empty case if needed
+            setSearchResults([]);  // Assuming you have a state for search results
         }
     }, [keyword]);
 
@@ -290,7 +298,6 @@ const HomePage = () => {
         }
 
         fetchAllChats();
-
         fetchSearchResults();
         fetchUserinfo();
 
@@ -364,7 +371,7 @@ const HomePage = () => {
     const deleteChat = async (chatId) => {
         console.log('btn clicked')
         try {
-            const response = await fetch(`https://chat-app-vzjv.onrender.com/api/chat/deleteChat/${chatId}`, {
+            const response = await fetch(`http://localhost:8080/api/chat/deleteChat/${chatId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -408,27 +415,21 @@ const HomePage = () => {
 
     return (
         <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6 overflow-x-hidden">
-
-            <header className="w-screen h-[8vh] bg-[#121218] flex justify-between items-center text-[white]">
+            <header className="w-full h-[8vh] bg-[#121218] flex justify-between items-center text-[white]">
                 <h1 className='ml-5 customText text-2xl font-bold font-sans'>.CONNECT</h1>
                 <TbLogout onClick={() => logout('JWT')} className='text-2xl mr-5 cursor-pointer hover:text-[red]' />
             </header>
 
-
-            <div className="main-section h-[80vh] w-[95vw] flex ">
-
-                <div className="left w-[30%] bg-[#121218] custom-scrollbar " >
-
-                    <div className="top-section w-full h-[9%] bg-[#30303065] text-[#c7c7c7] flex">
-                        <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
+            <div className="main-section h-[80vh] w-full md:w-[95vw] flex flex-col md:flex-row ">
+                <div className={`left w-full sm:w-[60%] lg:w-[30%] bg-[#121218] custom-scrollbar ${selectedChatId ? 'hidden md:block' : 'block'}`}>
+                    <div className="top-section w-full  bg-[#30303065] text-[#c7c7c7] flex h-[8vh] ">
+                        <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium ">
                             <img className="rounded-full w-10 h-10 cursor-pointer hover:border-2" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
-                            <p className='capitalize text-xl text-[#A47FCC]'>{userInfo.name}</p>
+                            <p className='capitalize text-xl text-[#A47FCC] font-bold '>{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
-                            <TbCircleDashed className='text-[#c7c7c7] hover:text-[#9678FF] hover:cursor-pointer' onClick={handleUpload} />
-                            <form encType="multipart/form-data" method='post' >
-
-
+                            <TbCircleDashed className='text-[#c7c7c7] hover:text-[#9678FF] hover:cursor-pointer' onClick={handleUpload} title='Upload status' />
+                            <form encType="multipart/form-data" method='post'>
                                 <input
                                     type='file'
                                     id='videoInput'
@@ -437,34 +438,21 @@ const HomePage = () => {
                                     onChange={handleVideoFileChange}
                                 />
                             </form>
-
-                            <BiCommentDetail className='text-[#c7c7c7]' />
                             <IoMdMore className='text-[#c7c7c7]' />
                         </div>
                     </div>
 
                     <div className="search-bar px-3 py-4 flex space-x-10 items-center text-white">
                         <input
-                            className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black "
-                            type="input"
+                            className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black"
+                            type="text" // Change "input" to "text" for better semantics
                             placeholder="Search or start new chat"
-                            onChange={(e) => {
-                                setKeyword(e.target.value);
-                                () => {
-
-                                    fetchSearchResults()
-                                }
-
-                            }}
+                            onChange={(e) => setKeyword(e.target.value)} // Update keyword on input change
                             value={keyword}
                         />
-
-                        {/* change this on click to clear */}
                         <div className='flex p-2 gap-5'>
-                            <button className="text-2xl  hover:text-[#9678FF] " ><IoFilter /></button>
-                            <button className="text-3xl hover:text-[#9678FF] " ><MdGroups onClick={openModal} /></button>
+                            <button className="text-3xl hover:text-[#9678FF]" title='Create group'><MdGroups onClick={openModal} /></button>
                         </div>
-
                     </div>
 
                     <div className="chat-section w-full h-[78%] overflow-y-scroll custom-scrollbar">
@@ -474,14 +462,11 @@ const HomePage = () => {
                             </div>
                         ) : (
                             (searchResults.length === 0 ? sortedChats : searchResults).map((chat, index) => (
-                                <div key={chat._id} className=''>
+                                <div key={chat._id}>
                                     <hr className='border-[#8F5EF6]' />
                                     <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo}
-                                        onSelectChat={handleChatSelect}  // Pass the callback function
-
-
+                                        onSelectChat={handleChatSelect}
                                     />
-
                                     <hr className='border-[#8F5EF6]' />
                                 </div>
                             ))
@@ -489,190 +474,111 @@ const HomePage = () => {
                     </div>
                 </div>
 
-
-                <div className="right w-[70%] text-white p-4 overflow-y-auto relative grid ">
-
-                    <div className="top-10 left-0  z-1 flex items-center mb-4 max-h-[50px]">
-
-
-                        {selectedChatInfo && (
-                            <img className={`w-10 h-10 rounded-full mr-5 caret-transparent z-0
-                             ${!selectedChatInfo.isGroupChat ? (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo).length >= 1 ? 'gradient , cursor-pointer' : '' : ""}`}
-                                src={selectedChatInfo.isGroupChat ?
-                                    (selectedChatInfo.groupPic ? selectedChatInfo.groupPic : defaultUserImage) :
-                                    (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage)}
-                                alt="Profile" onClick={() => {
-                                    participantStatusVideo = selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo;
-                                    console.log(participantStatusVideo);
-                                    if (!selectedChatInfo.groupPic) {
-                                        if (participantStatusVideo.length >= 1) {
-                                            setShowStatus(true);
-                                        }
-                                    }
-
-                                }} />
-                        )}
-
-
-
-
-
-
-                        <h6 className='z-5 text-[#a882d1] text-xl capitalize font-semibold z-0 cursor-pointer hover:text-white'
-                            onClick={openChatModal} >
-
-                            {selectedChatInfo ? ` ${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
-                        </h6>
-
-
-                        {selectedChatInfo && (
-                            <button className="ml-auto mr-2 z-0" onClick={toggleDropdown}>
-                                {!showDropdown ? (
-                                    <IoMdMore className="text-[#c7c7c7] text-2xl hover:text-[#9678FF]" />
-                                ) : (
-                                    <IoClose className="text-[#c7c7c7] text-2xl hover:text-[#9678FF]" />
-                                )}
-                            </button>
-                        )}
-
-
-                        {showDropdown && (
-                            <div className="absolute top-14 right-11 mt-1 bg-white border border-gray-300 round shadow-md w-[5vw] self-center highest">
-
-
-                                {/* Dropdown items */}
-
-                                {selectedChatInfo && showDropdown ? (<div className="py-2 gap-2 highest">
-                                    <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center mb-2">
-                                        Profile
-                                    </button>
-                                    <button className="w-full  focus:outline-none text-black hover:bg-[#9678FF] text-center" onClick={() => deleteChat(selectedChatInfo._id)}>
-                                        Delete
-                                    </button>
-                                </div>) : ""}
-
-                            </div>
-                        )}
-
-
-                    </div>
-
-                    <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-0'>
-
-                        {selectedChatId ? (
-                            chatDetails && chatDetails.length > 0 ? (
-                                <div>
-                                    {chatDetails.map((message, index) => (
-                                        <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
-                                            <div className="flex items-center">
-                                                {message.sender._id !== userInfo._id && (
-                                                    <img src={message.sender.profilePic || defaultUserImage} alt="Receiver" className="w-8 h-8 rounded-full mr-2" />
-                                                )}
-                                                <div className={`p-2 rounded-md ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
-                                                    <p> {message.content}</p>
-                                                </div>
-                                                {
-                                                    message.sender._id === userInfo._id && (
-                                                        <img src={message.sender.profilePic || defaultUserImage} alt="Sender" className="w-8 h-8 rounded-full ml-2" />
-                                                    )
-                                                }
-                                            </div>
-
-                                            <div className="bottom-0 right-0 w-[100%]  py-4 px-6 bg-[#30303065] flex items-center absolute">
-
-                                                <input
-                                                    className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
-                                                    type="text"
-                                                    placeholder="Type your message..."
-                                                    onChange={(e) => {
-                                                        setMessageContent(e.target.value);
-                                                    }}
-                                                    onFocus={() => {
-                                                        setIsTyping(true);
-                                                        console.log("Is Typing: true");
-                                                    }}
-                                                    onBlur={() => {
-                                                        setIsTyping(false);
-                                                        console.log("Is Typing: false");
-                                                    }}
-                                                    value={messageContent}
-
-
-                                                />
-
-                                                <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
-
-
-                                            </div>
-                                            {showTyping && (
-                                                <TypingCard className=".typingCard " />
-                                            )}
-                                        </div>
-
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="no-messages-message text-white text-center mt-4">
-                                    No messages to show
-                                    <div className="bottom-0 right-0 w-[100%]  py-4 px-6 bg-[#30303065] flex items-center absolute">
-                                        <input
-                                            className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
-                                            type="text"
-                                            placeholder="Type your message..."
-                                            onChange={(e) => {
-                                                setMessageContent(e.target.value);
-
-                                            }}
-                                            value={messageContent} />
-
-                                        <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
-
-
-                                    </div>
-                                </div>
-
-                            )
-                        ) : (
-                            <div className="welcome-message text-white text-center mt-4 text-medium">
-                                <h1 className='text-2xl'> Welcome to  <span className='customText font-bold text-2xl'>.CONNECT</span></h1>
-                                A Real time Chat-Application... !
-                            </div>
-                        )}
-
-                        {showstatus && (
-                            <div className='video bg-[#000000] w-[30vw] h-[80vh] flexprop absolute top-0 '>
-                                <button
-                                    className="absolute top-2 right-2 text-white text-lg cursor-pointer"
-                                    onClick={() => setShowStatus(false)}
-                                >
-                                    Close
-                                </button>
-
-
-                                <video autoPlay muted width="540" height="600" className='z-10' onEnded={handleVideoEnd}>
-                                    <source
-                                        src={selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo}
-                                        type="video/mp4"
+                {/* Selected Chat Section */}
+                <div className={`right w-full h-full md:w-[70%] text-white p-4  relative overflow-y-hidden ${selectedChatId ? 'grid' : 'hidden md:grid'}`} >
+                    {selectedChatId ? (
+                        <>
+                            {/* Close Button for Mobile View */}
+                            <div className="flex items-center mb-4 z-[10] mt-0 max-h-10">
+                                {selectedChatInfo && (
+                                    <img
+                                        className={`w-10 h-10 rounded-full mr-5 caret-transparent ${!selectedChatInfo.isGroupChat &&
+                                            (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo?.length >= 1 ? 'gradient cursor-pointer' : '')}`}
+                                        src={selectedChatInfo.isGroupChat
+                                            ? (selectedChatInfo.groupPic ? selectedChatInfo.groupPic : defaultUserImage)
+                                            : (selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.profilePic || defaultUserImage)}
+                                        alt="Profile"
+                                        onClick={() => {
+                                            const participantStatusVideo = selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo;
+                                            console.log(participantStatusVideo);
+                                            if (!selectedChatInfo.groupPic && participantStatusVideo?.length >= 1) {
+                                                setShowStatus(true);
+                                            }
+                                        }}
                                     />
-                                    Your browser does not support the video tag.
-                                </video></div>
-                        )
-                        }
+                                )}
+                                <h6 className='text-[#a882d1] text-xl capitalize font-semibold cursor-pointer hover:text-white'
+                                    onClick={openChatModal}>
+                                    {selectedChatInfo ? `${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
+                                </h6>
+                                <button className="text-[#9678FF] text-xl ml-auto" onClick={() => setSelectedChatId(null)}>                                        <IoClose className="text-[#ff6262] text-2xl hover:text-[red]" />
+                                </button>
+                            </div>
 
-                    </div>
+                            <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-[10]'>
+                                {chatDetails && chatDetails.length > 0 ? (
+                                    <div>
+                                        {chatDetails.map((message, index) => (
+                                            <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                <div className="flex items-center">
+                                                    {message.sender._id !== userInfo._id && (
+                                                        <img src={message.sender.profilePic || defaultUserImage} alt="Receiver" className="w-8 h-8 rounded-full mr-2" />
+                                                    )}
+                                                    <div className={` p-2 rounded-md  ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
+                                                        <p> {message.content}</p>
+                                                    </div>
+                                                    {message.sender._id === userInfo._id && (
+                                                        <img src={message.sender.profilePic || defaultUserImage} alt="Sender" className="w-8 h-8 rounded-full ml-2" />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="no-messages-message text-center text-white mt-4">No messages in this chat</div>
+                                )}
 
+                                <div className="bottom-0 right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center absolute">
+                                    <input
+                                        className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
+                                        type="text"
+                                        placeholder="Type your message..."
+                                        onChange={(e) => setMessageContent(e.target.value)}
+                                        onFocus={() => { setIsTyping(true); }}
+                                        onBlur={() => { setIsTyping(false); }}
+                                        value={messageContent}
+                                    />
+                                    <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="mt-auto z-[10] select-chat-message text-center text-white mb-auto">Select a chat to start messaging</div>
+                    )}
+                    {showstatus && (
+                        <div className="video z-[12] bg-[#000000] w-full sm:w-[30vw] h-[90vh] sm:h-[80vh] flex absolute top-0 overflow-y-hidden-hidden">
+                            <button
+                                className="absolute top-2 right-2 text-[2rem] cursor-pointer text-red-600 z-[12]"
+                                onClick={() => setShowStatus(false)}
+                            >
+                                &times; {/* Close button symbol */}
+                            </button>
 
+                            <video
+                                autoPlay
+                                muted
+                                width="540" // You can keep this or adjust based on responsiveness
+                                height="600" // You can keep this or adjust based on responsiveness
+                                className="z-10"
+                                onEnded={handleVideoEnd}
+                            >
+                                <source
+                                    src={selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo}
+                                    type="video/mp4"
+                                />
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    )}
                 </div>
-
-
-
-                <GroupModalComponent isOpen={isModalOpen} closeModal={closeModal} />
-                <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} fetchAllChats={fetchAllChats} />
-
             </div>
-            <footer className='text-white text-left p-4 bg-[#3f3f3f54] w-full overflow-hidden'>© Subham Das</footer>
+
+            <GroupModalComponent isOpen={isModalOpen} closeModal={closeModal} />
+            <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} fetchAllChats={fetchAllChats} />
         </div>
     );
+
+
 };
 
 export default HomePage;

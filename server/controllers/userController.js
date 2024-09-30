@@ -58,40 +58,58 @@ const findUserById = async (req, res) => {
 //take keyword and search for the user (tested and works) (used in client)
 const searchUser = async (req, res) => {
     try {
-        const page = req.query.page || 1;
-        const limits = req.query.size || 10;
+        const page = parseInt(req.query.page, 10) || 1;  // Ensure it's a number
+        const limits = parseInt(req.query.size, 10) || 10;  // Ensure it's a number
         const skip = (page - 1) * limits;
 
         const isNumeric = !isNaN(parseFloat(req.query.search)) && isFinite(req.query.search);
 
-        const keyword = isNumeric
-            ? { phoneNumber: req.query.search }
-            : req.query.regex
-                ? { name: { $regex: new RegExp(req.query.regex, 'i') } }
-                : { name: req.query.search };
+        // Get the ID of the user who is searching
+        const searchingUserId = req.user._id; // Ensure you have user info in req.user
 
-        const searchedUser = await User.find(keyword).select("name profilePic").skip(skip).limit(limits);
+        // Build the query based on the search input
+        let keyword;
+        if (isNumeric) {
+            keyword = { phoneNumber: req.query.search };  // Search by phone number
+        } else if (req.query.regex) {
+            keyword = { name: { $regex: new RegExp(req.query.regex, 'i') } };  // Search by regex
+        } else {
+            keyword = { name: { $regex: new RegExp(req.query.search, 'i') } };  // Fallback search
+        }
 
-        // console.log(searchedUser)
+        // Exclude the searching user from the results
+        const finalQuery = {
+            $and: [keyword, { _id: { $ne: searchingUserId } }]  // Exclude the user who is searching
+        };
 
-        res.status(200).send(searchedUser);
+        // Find users based on the keyword
+        const [searchedUsers, totalCount] = await Promise.all([
+            User.find(finalQuery).select("name profilePic").skip(skip).limit(limits),  // Get paginated results
+            User.countDocuments(finalQuery)  // Get total count of documents matching the keyword
+        ]);
+
+        console.log("-------------->", searchedUsers);
+
+        // Return the results in the desired format
+        res.status(200).json(searchedUsers.length > 0 ? searchedUsers : []);
     } catch (error) {
         console.error('Error:', error.message);
-        res.status(400).send(error.message);
+        res.status(500).json({ error: 'An error occurred while searching for users.' });
     }
 };
+
 
 //edit user info (used in client)
 const editUser = async (req, res) => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
 
         return res.status(200).send(updatedUser);
 
 
     } catch (error) {
-        return res.status(400).send(error.message)
+        return res.status(400).send(error.message);
 
     }
 }

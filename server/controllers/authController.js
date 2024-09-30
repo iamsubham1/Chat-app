@@ -10,6 +10,7 @@ const { generateUniqueOTP
 require('dotenv').config();
 
 var otp;
+
 const transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -104,7 +105,6 @@ const verifyEmail = async (req, res) => {
     res.status(404).json({ message: false });
 };
 
-
 const passwordChange = async (req, res) => {
     try {
 
@@ -128,9 +128,8 @@ const passwordChange = async (req, res) => {
     }
 };
 
-
 const sendOtpEmail = async (req, res) => {
-    otp = generateUniqueOTP(); // Assuming generateOTP is a function that generates OTP
+    otp = generateUniqueOTP();
     const { email } = req.body;
 
     const mailOptions = {
@@ -167,19 +166,18 @@ const sendOtpEmail = async (req, res) => {
 
         } else {
             console.log("Email sent:", info.response);
+
             res.status(200).json("OTP SENT Successfully");
-            sentotp = otp;
-            console.log(sentotp);
+
         }
     });
 }
-
 
 const verifyOtp = async (req, res) => {
     const { receivedOtp } = req.body
 
     console.log(receivedOtp, otp);
-    if (receivedOtp == otp) { // Assuming otp is defined somewhere in your code
+    if (receivedOtp == otp) {
         res.status(200).json("yes it works");
     } else {
         res.status(400).json("no it doesn't work");

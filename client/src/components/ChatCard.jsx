@@ -5,6 +5,8 @@ import defaultUserImage from '../assets/user.png';
 
 const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
 
+    console.log("chat--------->", chat);
+
     const { chatName, participants, latestMessage, groupPic, _id } = chat;
 
     if (searchUser) {
@@ -18,7 +20,7 @@ const ChatCard = ({ chat, searchUser, user, onSelectChat }) => {
 
     const loggedInUserId = user._id;
     const isGroupChat = chat.isGroupChat;
-
+    console.log(isGroupChat, "---------------------->>>>>>>")
     // Check who's info to show in card (group or receiver)
     const receiver = isGroupChat ? false : participants && participants.find(participant => participant._id !== loggedInUserId);
     const receiverName = isGroupChat ? chatName : (receiver ? receiver.name : 'Unknown');

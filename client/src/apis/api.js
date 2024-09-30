@@ -1,5 +1,5 @@
 // api.js
-const API_BASE_URL = 'https://chat-app-vzjv.onrender.com';
+const API_BASE_URL = 'http://localhost:8080';
 
 export const getAllChats = async (token) => {
     try {

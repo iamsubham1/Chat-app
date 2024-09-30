@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     verifyOtp
 } from '../apis/api';
 
 import PasswordChange from './PasswordChange';
 const VerifyOTP = (email) => {
-    const navigate = useNavigate();
 
     const [formData, setFormData] = useState('');
     const [otpVerified, setotpVerified] = useState(false);
@@ -29,7 +27,7 @@ const VerifyOTP = (email) => {
                 setotpVerified(true);
                 alert("otp verified");
             } else {
-                alert("something is wrong")
+                alert("wrong otp");
             }
 
         } catch (error) {

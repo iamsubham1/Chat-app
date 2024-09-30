@@ -31,7 +31,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://chat-app-vzjv.onrender.com/api/auth/signup', {
+            const response = await fetch('http://localhost:8080/api/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,10 +60,9 @@ const Signup = () => {
     };
 
     return (
-        <div className="h-screen flex  font-semibold font-poppins signup blackBg">
-            <header className="w-screen h-[8vh] bg-[#121218] flex justify-between items-center text-[white] z-10">
-                <h1 className='ml-5 customText text-2xl font-bold font-sans'>.CONNECT</h1>
-
+        <div className="h-screen flex font-semibold font-poppins signup blackBg">
+            <header className="w-full h-[8vh] bg-[#121218] flex justify-between items-center text-white px-4 z-10 ">
+                <h1 className='customText text-2xl font-bold  font-sans'>.CONNECT</h1>
             </header>
             <div className='w-full h-[90%] grid place-items-center'>
                 <div className="bg-[#0000005d] p-8 rounded shadow-md w-full sm:w-96 z-10 ">
@@ -133,8 +132,8 @@ const Signup = () => {
                             )}
                         </div>
 
-                        <div className="">
-                            <button type="submit" className='bg-[#0f0f0fc4] text-white px-6 py-2 rounded hover:bg-[white] hover:text-black transition duration-300 font-semibold border-2'>
+                        <div className="flex flex-col">
+                            <button type="submit" className='bg-[#0f0f0fc4]w-full text-white px-6 py-2 rounded hover:bg-[white] hover:text-black transition duration-300 font-semibold border-2'>
                                 Sign Up
                             </button>
                             <h6 className='text-white my-5'>Have an account ? <Link to='/login' className='text-[rgba(125,74,180,1)] hover:text-white'>

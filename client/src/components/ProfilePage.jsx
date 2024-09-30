@@ -18,7 +18,7 @@ const ProfilePage = () => {
 
 
     const [activeUserDetails, setActiveUserDetails] = useState('');
-    const [isuploading, setIsuploading] = useState(false);
+    const [loading, setloading] = useState(false);
     const [editData, setEditData] = useState({
         name: '',
         about: ''
@@ -26,6 +26,16 @@ const ProfilePage = () => {
     });
 
     const [isEditing, setIsEditing] = useState(false);
+
+    const getActiveUserDetails = async () => {
+        try {
+            const activeUserData = await getUserInfo(token);
+            setActiveUserDetails(activeUserData);
+            return activeUserData;
+        } catch (error) {
+            console.error('Error fetching user info:', error.message);
+        }
+    };
 
 
     const handleUpload = () => {
@@ -37,14 +47,14 @@ const ProfilePage = () => {
         const file = event.target.files && event.target.files[0];
 
         try {
-            setIsuploading(true);
+            setloading(true);
             console.log('File selected:', file);
 
             const formData = new FormData();
             formData.append('image', file);
 
             console.log('Sending file to server...');
-            const response = await fetch('https://chat-app-vzjv.onrender.com/api/user/uploadImg', {
+            const response = await fetch('http://localhost:8080/api/user/uploadImg', {
                 method: 'POST',
                 headers: {
                     'JWT': token,
@@ -69,7 +79,7 @@ const ProfilePage = () => {
             console.error('Error:', error.message);
         } finally {
             console.log('File upload process completed.');
-            setIsuploading(false);
+            setloading(false);
         }
     };
 
@@ -96,10 +106,13 @@ const ProfilePage = () => {
     };
 
 
-    const handleEdit = async () => {
-        console.log("user id is : ", activeUserDetails._id)
+    const handleEdit = async (e) => {
+        e.preventDefault();
+
+
         try {
-            const response = await fetch(`https://chat-app-vzjv.onrender.com/api/user/edit/${activeUserDetails._id}`, {
+            setloading(true);
+            const response = await fetch(`http://localhost:8080/api/user/edit/${activeUserDetails._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,45 +120,39 @@ const ProfilePage = () => {
                 },
                 body: JSON.stringify(editData),
                 credentials: 'include'
-            })
-            if (response.ok) {
-                const data = await response.JSON()
-                setActiveUserDetails(data)
+            });
+
+            if (response.status === 200) {
+                const data = await response.json();
+                setActiveUserDetails(data);
+
+                closeEditModal();
 
 
+
+            } else {
+                console.error("Unexpected status code:", response.status);
+                alert("something bad happened");
             }
-            alert("something is bad happened")
-
         } catch (error) {
             console.error('Network error:', error);
-
-        }
-    }
-
-    const handleSaveChanges = async () => {
-
-        handleEdit();
-        closeEditModal();
-        window.location.reload()
-    };
-
-    const getActiveUserDetails = async () => {
-        try {
-            const activeUserData = await getUserInfo(token);
-            setActiveUserDetails(activeUserData);
-            return activeUserData;
-        } catch (error) {
-            console.error('Error fetching user info:', error.message);
+        } finally {
+            console.log('edited successfully');
+            setloading(false);
         }
     };
+
+
 
 
     useEffect(() => {
 
-        getActiveUserDetails()
+        getActiveUserDetails();
 
-    }, [isuploading]);
-    if (isuploading) {
+    }, [loading,]);
+
+
+    if (loading) {
         return (
             <div className="w-[100vw] h-[100vh] bg-black"><div className="spinner-border" role="status" id='spinner'>
                 <span className="visually-hidden">Loading...</span>
@@ -209,7 +216,7 @@ const ProfilePage = () => {
                 overlayClassName="overlay"
             >
                 <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-                <form className='editForm' onSubmit={handleSaveChanges} >
+                <form className='editForm' onSubmit={handleEdit} >
                     <label className="block mb-2 py-2">
                         Name:
                         <input
