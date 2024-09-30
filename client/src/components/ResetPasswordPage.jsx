@@ -29,7 +29,7 @@ const ResetPasswordPage = () => {
         try {
             setloading(true);
 
-            const response = await fetch('http://localhost:8080/api/auth/verifyEmail', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/auth/verifyEmail', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

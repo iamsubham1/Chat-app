@@ -23,7 +23,7 @@ const io = socketIO(server, {
 });
 
 const corsOptions = {
-    origin: process.env.origin,
+    origin: [process.env.origin, 'http://localhost:8080'],
     methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
     credentials: true
 };

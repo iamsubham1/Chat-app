@@ -24,7 +24,7 @@ import {
 } from '../apis/api';
 import TypingCard from './TypingCard';
 
-const socket = io('http://localhost:8080', {
+const socket = io('https://chat-app-vzjv.onrender.com', {
     transports: ['websocket'],
 
 });
@@ -111,7 +111,7 @@ const HomePage = () => {
         try {
             console.log('Creating a new chat with user ID:', userId);
 
-            const response = await fetch('http://localhost:8080/api/chat/create', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/chat/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -198,7 +198,8 @@ const HomePage = () => {
 
     const handleUpload = () => {
         fileInputRef.current.click();
-    }
+    };
+
     const handleVideoFileChange = async (event) => {
         const file = event.target.files && event.target.files[0];
 
@@ -210,7 +211,7 @@ const HomePage = () => {
             formData.append('video', file);
 
             console.log('Sending file to server...');
-            const response = await fetch('http://localhost:8080/api/user/uploadVideo', {
+            const response = await fetch('https://chat-app-vzjv.onrender.com/api/user/uploadVideo', {
                 method: 'POST',
                 headers: {
                     'JWT': token,
@@ -371,7 +372,7 @@ const HomePage = () => {
     const deleteChat = async (chatId) => {
         console.log('btn clicked')
         try {
-            const response = await fetch(`http://localhost:8080/api/chat/deleteChat/${chatId}`, {
+            const response = await fetch(`https://chat-app-vzjv.onrender.com/api/chat/deleteChat/${chatId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -455,10 +456,13 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="chat-section w-full h-[78%] overflow-y-scroll custom-scrollbar">
+                    <div className="chat-section w-full h-[78%] overflow-y-scroll custom-scrollbar  ">
                         {((searchResults.length === 0 && allChats.length === 0) ? (
-                            <div className="no-chats-message text-white text-center mt-4">
-                                No chats to show
+                            <div className="no-chats-message text-white text-center h-screen ">
+                                <p className='mb-0 mt-0'>
+                                    No chats to show
+
+                                </p>
                             </div>
                         ) : (
                             (searchResults.length === 0 ? sortedChats : searchResults).map((chat, index) => (
@@ -527,10 +531,9 @@ const HomePage = () => {
                                 ) : (
                                     <div className="no-messages-message text-center text-white mt-4">No messages in this chat</div>
                                 )}
-
-                                <div className="bottom-0 right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center absolute">
+                                <div className="bottom-10 right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center absolute">
                                     <input
-                                        className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black"
+                                        className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black min-h-[35px]"
                                         type="text"
                                         placeholder="Type your message..."
                                         onChange={(e) => setMessageContent(e.target.value)}
@@ -540,6 +543,7 @@ const HomePage = () => {
                                     />
                                     <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
                                 </div>
+
                             </div>
                         </>
                     ) : (

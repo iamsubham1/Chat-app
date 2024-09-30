@@ -113,7 +113,7 @@ const ChatModalComponent = ({ isOpen, closeModal, selectedChatId, user, token, f
             formData.append('image', file);
 
             console.log('Sending file to server...');
-            const response = await fetch(`http://localhost:8080/api/user/uploadGroupPic/${selectedChatId}`, {
+            const response = await fetch(`https://chat-app-vzjv.onrender.com/api/user/uploadGroupPic/${selectedChatId}`, {
                 method: 'POST',
                 headers: {
                     'JWT': token,
