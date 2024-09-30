@@ -415,71 +415,81 @@ const HomePage = () => {
 
 
     return (
-        <div className="w-screen h-screen flex flex-col items-center justify-center customBg gap-6 overflow-x-hidden">
-            <header className="w-full h-[8vh] bg-[#121218] flex justify-between items-center text-[white]">
-                <h1 className='ml-5 customText text-2xl font-bold font-sans'>.CONNECT</h1>
-                <TbLogout onClick={() => logout('JWT')} className='text-2xl mr-5 cursor-pointer hover:text-[red]' />
+        <div className="w-screen h-screen flex flex-col items-center  customBg gap-6 overflow-x-hidden">
+            <header className="w-full h-[8vh] bg-[#121218] flex justify-between items-center text-[white] ">
+                <h1 className="ml-5 customText text-2xl font-bold font-sans">.CONNECT</h1>
+                <TbLogout onClick={() => logout('JWT')} className="text-2xl mr-5 cursor-pointer hover:text-[red]" />
             </header>
 
-            <div className="main-section h-[80vh] w-full md:w-[95vw] flex flex-col md:flex-row ">
+            <div className="main-section h-[80vh] w-full md:w-[95vw] flex flex-col md:flex-row">
                 <div className={`left w-full sm:w-[60%] lg:w-[30%] bg-[#121218] custom-scrollbar ${selectedChatId ? 'hidden md:block' : 'block'}`}>
-                    <div className="top-section w-full  bg-[#30303065] text-[#c7c7c7] flex h-[8vh] ">
-                        <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium ">
-                            <img className="rounded-full w-10 h-10 cursor-pointer hover:border-2" src={userInfo.profilePic || defaultUserImage} alt="User" onClick={handleProfile} />
-                            <p className='capitalize text-xl text-[#A47FCC] font-bold '>{userInfo.name}</p>
+                    <div className="top-section w-full bg-[#30303065] text-[#c7c7c7] flex h-[8vh]">
+                        <div className="profile-container w-[40%] flex gap-3 items-center px-3 font-medium">
+                            <img
+                                className="rounded-full w-10 h-10 cursor-pointer hover:border-2"
+                                src={userInfo.profilePic || defaultUserImage}
+                                alt="User"
+                                onClick={handleProfile}
+                            />
+                            <p className="capitalize text-xl text-[#A47FCC] font-bold">{userInfo.name}</p>
                         </div>
                         <div className="extras w-[60%] flex justify-end gap-3 px-2 items-center text-xl text-black font-black">
-                            <TbCircleDashed className='text-[#c7c7c7] hover:text-[#9678FF] hover:cursor-pointer' onClick={handleUpload} title='Upload status' />
-                            <form encType="multipart/form-data" method='post'>
+                            <TbCircleDashed className="text-[#c7c7c7] hover:text-[#9678FF] hover:cursor-pointer" onClick={handleUpload} title="Upload status" />
+                            <form encType="multipart/form-data" method="post">
                                 <input
-                                    type='file'
-                                    id='videoInput'
+                                    type="file"
+                                    id="videoInput"
                                     ref={fileInputRef}
                                     style={{ display: 'none' }}
                                     onChange={handleVideoFileChange}
                                 />
                             </form>
-                            <IoMdMore className='text-[#c7c7c7]' />
+                            <IoMdMore className="text-[#c7c7c7]" />
                         </div>
                     </div>
 
                     <div className="search-bar px-3 py-4 flex space-x-10 items-center text-white">
                         <input
                             className="border-none outline-none bg-[white] rounded-md w-[82%] py-1 px-2 text-black"
-                            type="text" // Change "input" to "text" for better semantics
+                            type="text"
                             placeholder="Search or start new chat"
-                            onChange={(e) => setKeyword(e.target.value)} // Update keyword on input change
+                            onChange={(e) => setKeyword(e.target.value)}
                             value={keyword}
                         />
-                        <div className='flex p-2 gap-5'>
-                            <button className="text-3xl hover:text-[#9678FF]" title='Create group'><MdGroups onClick={openModal} /></button>
+                        <div className="flex p-2 gap-5">
+                            <button className="text-3xl hover:text-[#9678FF]" title="Create group">
+                                <MdGroups onClick={openModal} />
+                            </button>
                         </div>
                     </div>
 
-                    <div className="chat-section w-full h-[78%] overflow-y-scroll custom-scrollbar  ">
-                        {((searchResults.length === 0 && allChats.length === 0) ? (
-                            <div className="no-chats-message text-white text-center h-screen ">
-                                <p className='mb-0 mt-0'>
-                                    No chats to show
-
-                                </p>
+                    <div
+                        className={`chat-section w-full h-[76%] ${searchResults.length === 0 && allChats.length === 0 ? 'overflow-y-hidden' : 'overflow-y-scroll'} custom-scrollbar`}
+                    >
+                        {searchResults.length === 0 && allChats.length === 0 ? (
+                            <div className="no-chats-message text-white text-center h-[80vh] overflow-y-hidden">
+                                <p className="mb-0 mt-0">No chats to show</p>
                             </div>
                         ) : (
                             (searchResults.length === 0 ? sortedChats : searchResults).map((chat, index) => (
-                                <div key={chat._id}>
-                                    <hr className='border-[#8F5EF6]' />
-                                    <ChatCard chat={chat} isGroupChat={chat.isGroupChat} searchUser={searchResults[index]} user={userInfo}
+                                <div key={chat._id} className="bg-green-300">
+                                    <hr className="border-[#8F5EF6]" />
+                                    <ChatCard
+                                        chat={chat}
+                                        isGroupChat={chat.isGroupChat}
+                                        searchUser={searchResults[index]}
+                                        user={userInfo}
                                         onSelectChat={handleChatSelect}
                                     />
-                                    <hr className='border-[#8F5EF6]' />
+                                    <hr className="border-[#8F5EF6]" />
                                 </div>
                             ))
-                        ))}
+                        )}
                     </div>
                 </div>
 
                 {/* Selected Chat Section */}
-                <div className={`right w-full h-full md:w-[70%] text-white p-4  relative overflow-y-hidden ${selectedChatId ? 'grid' : 'hidden md:grid'}`} >
+                <div className={`right w-full h-full md:w-[70%] text-white p-4 relative overflow-y-hidden ${selectedChatId ? 'grid' : 'hidden md:grid'}`}>
                     {selectedChatId ? (
                         <>
                             {/* Close Button for Mobile View */}
@@ -494,93 +504,123 @@ const HomePage = () => {
                                         alt="Profile"
                                         onClick={() => {
                                             const participantStatusVideo = selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo;
-                                            console.log(participantStatusVideo);
                                             if (!selectedChatInfo.groupPic && participantStatusVideo?.length >= 1) {
                                                 setShowStatus(true);
                                             }
                                         }}
                                     />
                                 )}
-                                <h6 className='text-[#a882d1] text-xl capitalize font-semibold cursor-pointer hover:text-white'
-                                    onClick={openChatModal}>
+                                <h6
+                                    className="text-[#a882d1] text-xl capitalize font-semibold cursor-pointer hover:text-white"
+                                    onClick={openChatModal}
+                                >
                                     {selectedChatInfo ? `${selectedChatInfo.isGroupChat ? selectedChatInfo.chatName : selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.name || 'Unknown'}` : ''}
                                 </h6>
-                                <button className="text-[#9678FF] text-xl ml-auto" onClick={() => setSelectedChatId(null)}>                                        <IoClose className="text-[#ff6262] text-2xl hover:text-[red]" />
+                                <button className="text-[#9678FF] text-xl ml-auto" onClick={() => setSelectedChatId(null)}>
+                                    <IoClose className="text-[#ff6262] text-2xl hover:text-[red]" />
                                 </button>
                             </div>
 
-                            <div className='messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-[10]'>
-                                {chatDetails && chatDetails.length > 0 ? (
-                                    <div>
-                                        {chatDetails.map((message, index) => (
-                                            <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
-                                                <div className="flex items-center">
-                                                    {message.sender._id !== userInfo._id && (
-                                                        <img src={message.sender.profilePic || defaultUserImage} alt="Receiver" className="w-8 h-8 rounded-full mr-2" />
-                                                    )}
-                                                    <div className={` p-2 rounded-md  ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
-                                                        <p> {message.content}</p>
+                            <div className="messagesContainer h-[90%] overflow-y-auto overflow-x-hidden p-4 custom-scrollbar z-[10]">
+                                {selectedChatId ? (
+                                    chatDetails && chatDetails.length > 0 ? (
+                                        <div>
+                                            {chatDetails.map((message, index) => (
+                                                <div key={index} className={`mb-4 flex ${message.sender._id === userInfo._id ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                    <div className="flex items-center">
+                                                        {message.sender._id !== userInfo._id && (
+                                                            <img
+                                                                src={message.sender.profilePic || defaultUserImage}
+                                                                alt="Receiver"
+                                                                className="w-8 h-8 rounded-full mr-2"
+                                                            />
+                                                        )}
+                                                        <div className={`p-2 rounded-md ${message.sender._id === userInfo._id ? 'bg-[#9678FF]' : 'bg-[#4A4F63]'}`}>
+                                                            <p>{message.content}</p>
+                                                        </div>
+                                                        {message.sender._id === userInfo._id && (
+                                                            <img
+                                                                src={message.sender.profilePic || defaultUserImage}
+                                                                alt="Sender"
+                                                                className="w-8 h-8 rounded-full ml-2"
+                                                            />
+                                                        )}
                                                     </div>
-                                                    {message.sender._id === userInfo._id && (
-                                                        <img src={message.sender.profilePic || defaultUserImage} alt="Sender" className="w-8 h-8 rounded-full ml-2" />
-                                                    )}
                                                 </div>
+                                            ))}
+                                            {/* Message input bar */}
+                                            <div className="bottom-5 absolute right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center">
+                                                <input
+                                                    className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black min-h-[35px]"
+                                                    type="text"
+                                                    placeholder="Type your message..."
+                                                    onChange={(e) => setMessageContent(e.target.value)}
+                                                    onFocus={() => setIsTyping(true)}
+                                                    onBlur={() => setIsTyping(false)}
+                                                    value={messageContent}
+                                                />
+                                                <IoMdSend
+                                                    onClick={handleSendMessage}
+                                                    className="ml-5 hover:text-[#9678FF] text-2xl cursor-pointer"
+                                                />
                                             </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="no-messages-message text-center text-white mt-4">No messages in this chat</div>
-                                )}
-                                <div className="bottom-10 right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center absolute">
-                                    <input
-                                        className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black min-h-[35px]"
-                                        type="text"
-                                        placeholder="Type your message..."
-                                        onChange={(e) => setMessageContent(e.target.value)}
-                                        onFocus={() => { setIsTyping(true); }}
-                                        onBlur={() => { setIsTyping(false); }}
-                                        value={messageContent}
-                                    />
-                                    <IoMdSend onClick={handleSendMessage} className='ml-5 hover:text-[#9678FF] text-2xl cursor-pointer' />
-                                </div>
+                                            {showTyping && <TypingCard className="typingCard" />}
+                                        </div>
+                                    ) : (<>
 
+                                        <div className="no-messages-message text-center text-white mt-4">
+                                            No messages in this chat
+                                        </div>
+                                        <div className="bottom-5 absolute right-0 w-[100%] py-4 px-6 bg-[#30303065] flex items-center">
+                                            <input
+                                                className="border-solid-red outline-none bg-slate-200 rounded-md flex-1 py-1 px-2 text-black min-h-[35px]"
+                                                type="text"
+                                                placeholder="Type your message..."
+                                                onChange={(e) => setMessageContent(e.target.value)}
+                                                onFocus={() => setIsTyping(true)}
+                                                onBlur={() => setIsTyping(false)}
+                                                value={messageContent}
+                                            />
+                                            <IoMdSend
+                                                onClick={handleSendMessage}
+                                                className="ml-5 hover:text-[#9678FF] text-2xl cursor-pointer"
+                                            />
+                                        </div>
+                                    </>
+
+                                    )
+                                ) : (
+                                    <div className="welcome-message text-white text-center mt-4 text-medium">
+                                        <h1 className="text-2xl">
+                                            Welcome to <span className="customText font-bold text-2xl">.CONNECT</span>
+                                        </h1>
+                                        A Real-time Chat Application...!
+                                    </div>
+                                )}
                             </div>
                         </>
-                    ) : (
-                        <div className="mt-auto z-[10] select-chat-message text-center text-white mb-auto">Select a chat to start messaging</div>
-                    )}
+                    ) : null}
+
                     {showstatus && (
-                        <div className="video z-[12] bg-[#000000] w-full sm:w-[30vw] h-[90vh] sm:h-[80vh] flex absolute top-0 overflow-y-hidden-hidden">
+                        <div className="video z-[12] bg-[#000000] w-full sm:w-[30vw] h-[90vh] sm:h-[80vh] flex absolute top-0 overflow-hidden">
                             <button
                                 className="absolute top-2 right-2 text-[2rem] cursor-pointer text-red-600 z-[12]"
                                 onClick={() => setShowStatus(false)}
                             >
-                                &times; {/* Close button symbol */}
+                                &times;
                             </button>
-
-                            <video
-                                autoPlay
-                                muted
-                                width="540" // You can keep this or adjust based on responsiveness
-                                height="600" // You can keep this or adjust based on responsiveness
-                                className="z-10"
-                                onEnded={handleVideoEnd}
-                            >
-                                <source
-                                    src={selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo}
-                                    type="video/mp4"
-                                />
-                                Your browser does not support the video tag.
+                            <video autoPlay muted width="540" height="600" className="z-10" onClick={() => setShowStatus(false)}>
+                                <source src={selectedChatInfo.participants.find(participant => participant._id !== userInfo._id)?.statusVideo} type="video/mp4" />
                             </video>
                         </div>
                     )}
                 </div>
             </div>
-
             <GroupModalComponent isOpen={isModalOpen} closeModal={closeModal} />
             <ChatModalComponent isOpen={isChatModalOpen} closeModal={closeChatModal} selectedChatId={selectedChatId} user={userInfo} token={token} fetchAllChats={fetchAllChats} />
         </div>
     );
+
 
 
 };

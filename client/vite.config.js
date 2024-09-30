@@ -9,6 +9,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    },
+    }
   },
+  server: {
+    host: '0.0.0.0', // Allows access from the network
+    port: 5713,  // Set the port you want to use
+  }
 })

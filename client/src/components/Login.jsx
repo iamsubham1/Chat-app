@@ -59,7 +59,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center font-poppins relative overlay">
+    <div className="min-h-screen flex flex-col items-center font-poppins relative blackBg">
       <header className="w-full h-[8vh] bg-[#121218] flex justify-between items-center text-white px-4 z-10 ">
         <h1 className='customText text-2xl font-bold  font-sans'>.CONNECT</h1>
       </header>

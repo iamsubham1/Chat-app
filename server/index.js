@@ -23,12 +23,26 @@ const io = socketIO(server, {
 });
 
 const corsOptions = {
-    origin: [process.env.origin, 'http://localhost:8080'],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            process.env.origin,
+            'http://localhost:5713',
+
+        ];
+
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true); // Allow the origin
+        } else {
+            callback(new Error('Not allowed by CORS')); // Reject the origin
+        }
+    },
     methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
     credentials: true
 };
 
 app.use(cors(corsOptions));
+
 
 const startServer = async () => {
     try {
